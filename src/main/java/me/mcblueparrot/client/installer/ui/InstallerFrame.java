@@ -8,8 +8,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import me.mcblueparrot.client.installer.Installer;
 
-import me.mcblueparrot.client.installer.Launcher;
 import me.mcblueparrot.client.installer.ui.step.StepType;
 
 public class InstallerFrame extends JFrame {
@@ -20,7 +20,8 @@ public class InstallerFrame extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private StepType step;
-	private Launcher launcher;
+	private Installer installer = new Installer(); 
+        private int launcherType;
 	private JButton previous;
 
 	public InstallerFrame() {
@@ -89,12 +90,15 @@ public class InstallerFrame extends JFrame {
 		return "Sol Client Installer";
 	}
 
-	public void setLauncher(Launcher launcher) {
-		this.launcher = launcher;
+	public void setInstallerType(int launcher) {
+		this.launcherType = launcher;
 	}
+        public int getInstallerType() {
+            return launcherType;
+        }
 
-	public Launcher getLauncher() {
-		return launcher;
+	public Installer getInstaller() {
+		return this.installer;
 	}
 
 	public void previous() {

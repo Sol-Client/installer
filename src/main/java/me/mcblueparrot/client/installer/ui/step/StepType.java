@@ -11,7 +11,9 @@ import me.mcblueparrot.client.installer.ui.InstallerFrame;
 public enum StepType {
 	CHOOSE_LAUNCHER(ChooseLauncherStep::new),
 	INSTALL_LOCATION(InstallLocationStep::new),
-	CUSTOMISE(CustomiseStep::new);
+        INSTALL(InstallStep::new);
+	//CUSTOMISE(CustomiseStep::new);
+        
 
 	private JPanel cachedPanel;
 	private Function<InstallerFrame, JPanel> panel;

@@ -12,8 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import me.mcblueparrot.client.installer.DefaultPaths;
 
-import me.mcblueparrot.client.installer.Launcher;
 import me.mcblueparrot.client.installer.ui.InstallerFrame;
 
 public class InstallLocationStep extends JPanel {
@@ -27,13 +27,12 @@ public class InstallLocationStep extends JPanel {
 		instruction.setFont(instruction.getFont().deriveFont(20F));
 		instruction.setBounds(0, 25, InstallerFrame.WIDTH, 40);
 		add(instruction);
-
+                
 		JTextField installationLocation = new JTextField(
-				InstallerFrame.INSTANCE.getLauncher().getDefaultLocation().getAbsolutePath());
+				DefaultPaths.getDefaultLocation(DefaultPaths.getLocationsForLauncher(InstallerFrame.INSTANCE.getInstallerType())).toString());
 		installationLocation.setBounds(InstallerFrame.WIDTH / 2 - 100, 75, 200, 30);
 		add(installationLocation);
 		installationLocation.addKeyListener(new KeyAdapter() {
-
 			@Override
 			public void keyTyped(KeyEvent event) {
 				SwingUtilities.invokeLater(() -> installationLocation.putClientProperty("JComponent.outline",
@@ -46,18 +45,12 @@ public class InstallLocationStep extends JPanel {
 		installButton.setBounds(InstallerFrame.WIDTH / 2 - 50, 125, 100, 30);
 		installButton.addActionListener((event) -> {
 			File file = getFile(installationLocation);
-
 			if(!file.exists()) {
 				JOptionPane.showMessageDialog(frame, "Could not find the specified file", "Oh Dear", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-
-			try {
-				frame.getLauncher().install(file);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+                        frame.getInstaller().setPath(file);
+			frame.next();
 		});
 		add(installButton);
 	}
