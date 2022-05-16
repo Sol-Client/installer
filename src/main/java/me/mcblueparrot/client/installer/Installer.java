@@ -32,10 +32,9 @@ import org.json.JSONObject;
 
 /**
  *
- * @author maks
+ * @author maks & kode
  */
 public class Installer {
-    private static final String SPECIALSOURCE_URL = "https://repo.maven.apache.org/maven2/net/md-5/SpecialSource/1.7.4/SpecialSource-1.7.4-shaded.jar";
     private static final String MAPPINGS_URL = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp/1.8.9/mcp-1.8.9-srg.zip";
     private int launcherType = -1;
     private List<File> locations;
@@ -50,7 +49,7 @@ public class Installer {
         this.callback = callback;
         new Thread(this::installAsync).start();
     }
-    
+
     private void installAsync() {
         File mcJar = new File(data, "versions/1.8.9/1.8.9.jar");
         if(!mcJar.exists()) {
@@ -61,18 +60,20 @@ public class Installer {
         File solClientDestination = new File(data, "versions/sol-client");
         solClientDestination.mkdirs();
         callback.setProgressBarIndeterminate(true);
-        callback.setTextStatus("Getting last version information...");
-        ClientRelease latest = ClientRelease.latest();
-        if(latest == null) {
-            callback.setTextStatus("Failed to get latest version information");
-            return;
+        callback.setTextStatus("Getting version info...");
+        ClientRelease latest;
+        try {
+        	latest = ClientRelease.latest();
+        }catch(Throwable e) {
+        	callback.setTextStatus("Failed to get version info", e);
+        	callback.onDone(false);
+        	return;
         }
-        callback.setTextStatus("Installing Sol Client " + latest.getId());
-        callback.setTextStatus("Creating a cache folder...");
-        File cacheFolder = new File(System.getProperty("java.io.tmpdir"), "sol_installer_cache");
+        callback.setTextStatus("Using version " + latest.getId());
+        File cacheFolder = new File(System.getProperty("java.io.tmpdir"), "sol-installer-cache");
         if(!cacheFolder.exists()) {
             if(!cacheFolder.mkdirs()) {
-                callback.setTextStatus("Failed to create a cache folder!");
+                callback.setTextStatus("Failed to create installation folder");
                 callback.onDone(false);
                 return;
             }
@@ -92,7 +93,7 @@ public class Installer {
             callback.setTextStatus("Downloading mappings...");
             Utils.downloadFileMonitored(mappings, new URL(MAPPINGS_URL), callback);
         }catch(Exception e) {
-            callback.setTextStatus("Download failed due to "+e.toString());
+            callback.setTextStatus("Download failed", e);
             callback.onDone(false);
             return;
         }
@@ -100,14 +101,16 @@ public class Installer {
             callback.setProgressBarIndeterminate(true);
             callback.setTextStatus("Unpacking mappings...");
             ZipFile mappingsFile = new ZipFile(mappings);
-            ZipEntry joinedSarge = mappingsFile.getEntry("joined.srg");
-            if(joinedSarge == null) {
+            ZipEntry joinedSrgEntry = mappingsFile.getEntry("joined.srg");
+            if(joinedSrgEntry == null) {
                 callback.setTextStatus("Unable to find mappings!");
                 callback.onDone(false);
+                mappingsFile.close();
                 return;
             }
             FileOutputStream srg = new FileOutputStream(joinedSrg);
-            IOUtils.copy(mappingsFile.getInputStream(joinedSarge), srg);
+            IOUtils.copy(mappingsFile.getInputStream(joinedSrgEntry), srg);
+            mappingsFile.close();
             callback.setTextStatus("Remapping...");
             net.md_5.specialsource.SpecialSource.main(new String[]{
                 "--in-jar", mcJar.getAbsolutePath(),
@@ -122,7 +125,7 @@ public class Installer {
             return;
         }
     }
-    
+
     private URL getOptifineUrl() throws IOException{
         String downloadPage = IOUtils.toString(new URL("https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_M5.jar"), StandardCharsets.UTF_8);
         String link = downloadPage.substring(downloadPage.indexOf("downloadx"));
@@ -130,7 +133,7 @@ public class Installer {
         link = "https://optifine.net/" + link;
         return new URL(link);
     }
-    
+
     private boolean addProfile() throws IOException{
         switch (launcherType) {
             default:

@@ -1,6 +1,7 @@
 package me.mcblueparrot.client.installer.util;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import org.json.JSONObject;
 
@@ -43,13 +44,8 @@ public class ClientRelease {
 		return gameJar;
 	}
 
-	public static ClientRelease latest() {
-            try {
+	public static ClientRelease latest() throws IOException {
 		return parse(Utils.json(new URL(System.getProperty("me.mcblueparrot.client.install.api", "https://api.github.com/repos/TheKodeToad/Sol-Client/releases/latest"))));
-            }catch(IOException e) {
-                e.printStackTrace();
-                return null;
-            }
 	}
 
 }
