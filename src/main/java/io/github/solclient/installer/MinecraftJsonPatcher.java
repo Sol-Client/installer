@@ -23,6 +23,7 @@
  */
 package io.github.solclient.installer;
 
+import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.util.Utils;
 import java.io.File;
 import java.io.IOException;
@@ -63,13 +64,13 @@ public class MinecraftJsonPatcher {
 		if(downloads != null) {
 			JSONObject client = (JSONObject) downloads.get("client");
 			if(!verify(gameJar, client.getString("sha1"))) {
-				cb.setTextStatus("Downloading Minecraft 1.8.9 game .jar");
+				cb.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, gameJar.getName()));
 				Utils.downloadFileMonitored(gameJar,new URL(client.getString("url")), cb);
 			}else{
-				cb.setTextStatus("Minecraft jar already present");
+				cb.setTextStatus(Locale.getString(Locale.MSG_JAR_VERIFIED,gameJar.getName()));
 			}
 		}else {
-			cb.setTextStatus("Damaged Minecraft json");
+			cb.setTextStatus(Locale.getString(Locale.MSG_DAMAGED_MC_JSON));
 			return false;
 		}
 		gameJsonObject.put("id", targetName);
@@ -99,12 +100,13 @@ public class MinecraftJsonPatcher {
 		   }
 	   }
 	}
-   public void putFullLibrary(String url, String mavenName, InstallStatusCallback cb) throws IOException{
+   public boolean putFullLibrary(String url, String mavenName, InstallStatusCallback cb) throws IOException{
 	   String libLocalPath = mavenNameToPath(mavenName);
 	   File libPath = new File(libsFolder, libLocalPath);
-	   cb.setTextStatus("Downloading "+mavenName);
+	   cb.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, mavenName));
 	   if(!libPath.getParentFile().exists() && !libPath.getParentFile().mkdirs()) {
-		   cb.setTextStatus("Could not create folder " + libPath.getParentFile());
+		   cb.setTextStatus(Locale.getString(Locale.MSG_CANT_CREATE_FOLDER, libPath.getAbsolutePath()));
+           return false;
 	   }
 	   Utils.downloadFileMonitored(libPath, new URL(url), cb);
 	   JSONArray libraries = gameJsonObject.getJSONArray("libraries");
@@ -117,6 +119,7 @@ public class MinecraftJsonPatcher {
 	   library.put("name", mavenName);
 	   library.put("downloads", new JSONObject().put("artifact", artifact));
 	   libraries.put(library);
+       return true;
    } 
 	
 	public File getSourceClient() {
@@ -155,12 +158,12 @@ public class MinecraftJsonPatcher {
 	}
 
 	private static String byteToHex(final byte[] hash) {
-		Formatter formatter = new Formatter();
-		for (byte b : hash) {
-			formatter.format("%02x", b);
-		}
-		String result = formatter.toString();
-		formatter.close();
+        String result;
+        try (Formatter formatter = new Formatter()) {
+            for (byte b : hash) {
+                formatter.format("%02x", b);
+            }   result = formatter.toString();
+        }
 		return result;
 	}
 

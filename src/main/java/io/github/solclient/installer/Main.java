@@ -31,13 +31,14 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 
 import io.github.solclient.installer.ui.InstallerFrame;
+import io.github.solclient.installer.locale.Locale;
 
 public class Main {
 
 	public static void main(String[] args) {
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		FlatDarculaLaf.setup();
-
+        Locale.setLocale(java.util.Locale.getDefault());
 		InstallerFrame frame = InstallerFrame.INSTANCE;
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

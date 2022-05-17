@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import io.github.solclient.installer.Installer;
+import io.github.solclient.installer.locale.Locale;
 
 import io.github.solclient.installer.ui.step.StepType;
 
@@ -61,12 +62,12 @@ public class InstallerFrame extends JFrame {
 		title.setBounds(0, 15, WIDTH, 40);
 		add(title);
 
-		previous = new JButton("< Back");
+		previous = new JButton(Locale.getString(Locale.UI_BACK));
 		previous.setBounds(20, HEIGHT - 80, 100, 30);
 		previous.addActionListener((event) -> previous());
 		add(previous);
 
-		next = new JButton("Next >");
+		next = new JButton(Locale.getString(Locale.UI_NEXT));
 		next.setBounds(WIDTH - 120, HEIGHT - 80, 100, 30);
 		next.addActionListener((event) -> {
 			nextAction.run();
@@ -91,7 +92,7 @@ public class InstallerFrame extends JFrame {
 
 	@Override
 	public String getTitle() {
-		return "Sol Client Installer";
+		return Locale.getString(Locale.UI_TITLE);
 	}
 
 	public void setInstallerType(int launcher) {

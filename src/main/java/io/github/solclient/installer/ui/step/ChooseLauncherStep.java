@@ -32,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import io.github.solclient.installer.Launchers;
 import io.github.solclient.installer.Installer;
+import io.github.solclient.installer.locale.Locale;
 
 import io.github.solclient.installer.ui.InstallerFrame;
 
@@ -41,7 +42,7 @@ public class ChooseLauncherStep extends JPanel {
 
 	public ChooseLauncherStep(InstallerFrame frame) {
 		setLayout(null);
-		JLabel instruction = new JLabel("Select your launcher");
+		JLabel instruction = new JLabel(Locale.getString(Locale.UI_SELECT_LAUNCHER));
 		instruction.setHorizontalAlignment(SwingConstants.CENTER);
 		instruction.setFont(instruction.getFont().deriveFont(20F));
 		instruction.setBounds(0, 40, InstallerFrame.WIDTH, 40);

@@ -34,6 +34,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import io.github.solclient.installer.Launchers;
+import io.github.solclient.installer.locale.Locale;
 
 import io.github.solclient.installer.ui.InstallerFrame;
 
@@ -43,7 +44,7 @@ public class InstallLocationStep extends JPanel {
 
 	public InstallLocationStep(InstallerFrame frame) {
 		setLayout(null);
-		JLabel instruction = new JLabel("Install Location");
+		JLabel instruction = new JLabel(Locale.getString(Locale.UI_INSTALL_LOCATION));
 		instruction.setHorizontalAlignment(SwingConstants.CENTER);
 		instruction.setFont(instruction.getFont().deriveFont(20F));
 		instruction.setBounds(0, 25, InstallerFrame.WIDTH, 40);
@@ -63,8 +64,8 @@ public class InstallLocationStep extends JPanel {
 		});
 		frame.setNextButtonAction(() -> {
 			File file = getFile(installationLocation);
-			if (!file.exists()) {
-				JOptionPane.showMessageDialog(frame, "Could not find the specified file", "Oh Dear", JOptionPane.ERROR_MESSAGE);
+			if (!file.canRead() || !file.canWrite()) { // <- thy return false when the file doesn't exist
+				JOptionPane.showMessageDialog(frame, Locale.getString(Locale.UI_NO_GAMEDIR), Locale.getString(Locale.UI_OH_DEAR), JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			frame.getInstaller().setPath(file);
