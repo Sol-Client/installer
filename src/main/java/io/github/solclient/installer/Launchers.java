@@ -29,7 +29,10 @@ import java.util.Comparator;
 import java.util.List;
 import io.github.solclient.installer.util.OperatingSystem;
 
-public class DefaultPaths {
+public class Launchers {
+	/**
+	 * PolyMC/MultiMC
+	 */
 	public static final int LAUNCHER_TYPE_POLYMC = 0;
 	public static final int LAUNCHER_TYPE_MINECRAFT = 1;
 	private static final List<File> minecraftLauncherPaths;
@@ -51,10 +54,20 @@ public class DefaultPaths {
 	}
 	public static List<File> getLocationsForLauncher(int type) {
 		switch(type) {
-			case LAUNCHER_TYPE_POLYMC:
-				return polymcPaths;
 			case LAUNCHER_TYPE_MINECRAFT:
 				return minecraftLauncherPaths;
+			case LAUNCHER_TYPE_POLYMC:
+				return polymcPaths;
+			default:
+				throw new IllegalArgumentException();
+		}
+	}
+	public static File getVersionJar(File data, String version, int type) {
+		switch(type) {
+			case LAUNCHER_TYPE_MINECRAFT:
+				return new File(data, "versions/" + version + "/" + version + ".jar");
+			case LAUNCHER_TYPE_POLYMC:
+				return new File(data, "libraries/com/mojang/minecraft/" + version + "/minecraft-" + version + "-client.jar");
 			default:
 				throw new IllegalArgumentException();
 		}

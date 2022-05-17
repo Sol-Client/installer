@@ -34,7 +34,7 @@ public class InstallStep extends javax.swing.JPanel implements InstallStatusCall
 	 */
 	public InstallStep(InstallerFrame frame) {
 		initComponents();
-		frame.getInstaller().install(this);
+		frame.getInstaller().install(frame.getInstallerType(), this);
 	}
 
 	/**

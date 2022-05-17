@@ -30,7 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import io.github.solclient.installer.DefaultPaths;
+import io.github.solclient.installer.Launchers;
 import io.github.solclient.installer.Installer;
 
 import io.github.solclient.installer.ui.InstallerFrame;
@@ -51,7 +51,7 @@ public class ChooseLauncherStep extends JPanel {
 		installMinecraft.setBounds(140, 90, 100, 30);
 		add(installMinecraft);
 		installMinecraft.addActionListener((event) -> {
-			frame.setInstallerType(DefaultPaths.LAUNCHER_TYPE_MINECRAFT);
+			frame.setInstallerType(Launchers.LAUNCHER_TYPE_MINECRAFT);
 			frame.next();
 		});
 
@@ -59,7 +59,7 @@ public class ChooseLauncherStep extends JPanel {
 		installPolyMC.setBounds(260, 90, 100, 30);
 		add(installPolyMC);
 		installPolyMC.addActionListener((event) -> {
-						frame.setInstallerType(DefaultPaths.LAUNCHER_TYPE_POLYMC);
+						frame.setInstallerType(Launchers.LAUNCHER_TYPE_POLYMC);
 			//frame.setLauncher(Launcher.POLYMC);
 			frame.next();
 		});

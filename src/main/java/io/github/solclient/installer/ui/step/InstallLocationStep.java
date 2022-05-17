@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import io.github.solclient.installer.DefaultPaths;
+import io.github.solclient.installer.Launchers;
 
 import io.github.solclient.installer.ui.InstallerFrame;
 
@@ -54,7 +54,7 @@ public class InstallLocationStep extends JPanel {
 		add(instruction);
 				
 		JTextField installationLocation = new JTextField(
-				DefaultPaths.getDefaultLocation(DefaultPaths.getLocationsForLauncher(InstallerFrame.INSTANCE.getInstallerType())).toString());
+				Launchers.getDefaultLocation(Launchers.getLocationsForLauncher(InstallerFrame.INSTANCE.getInstallerType())).toString());
 		installationLocation.setBounds(InstallerFrame.WIDTH / 2 - 100, 75, 200, 30);
 		add(installationLocation);
 		installationLocation.addKeyListener(new KeyAdapter() {

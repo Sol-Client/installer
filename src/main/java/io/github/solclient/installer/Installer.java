@@ -40,10 +40,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import static io.github.solclient.installer.DefaultPaths.LAUNCHER_TYPE_MINECRAFT;
-import static io.github.solclient.installer.DefaultPaths.LAUNCHER_TYPE_POLYMC;
+import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_MINECRAFT;
+import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_POLYMC;
 import io.github.solclient.installer.util.ClientRelease;
-import io.github.solclient.installer.util.OperatingSystem;
 import io.github.solclient.installer.util.Utils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -51,22 +50,22 @@ import org.json.JSONObject;
 
 public class Installer {
 	private static final String MAPPINGS_URL = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp/1.8.9/mcp-1.8.9-srg.zip";
-	private int launcherType = -1;
-	private List<File> locations;
 	private File data;
-	private InstallStatusCallback callback;
+	private volatile int launcherType = -1;
+	private volatile InstallStatusCallback callback;
 
 	public void setPath(File f) {
 		this.data = f;
 	}
 
-	public void install(InstallStatusCallback callback) {
+	public void install(int launcherType, InstallStatusCallback callback) {
+		this.launcherType = launcherType;
 		this.callback = callback;
 		new Thread(this::installAsync).start();
 	}
 
 	private void installAsync() {
-		File mcJar = new File(data, "versions/1.8.9/1.8.9.jar");
+		File mcJar = Launchers.getVersionJar(data, "1.8.9", launcherType);
 		if(!mcJar.exists()) {
 			callback.setTextStatus("Unable to find Minecraft 1.8.9");
 			callback.onDone(false);
