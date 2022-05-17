@@ -6,7 +6,6 @@ repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	implementation files("libs/specialsource.jar")
 	implementation "com.formdev:flatlaf:2.2"

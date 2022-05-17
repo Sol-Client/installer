@@ -40,6 +40,7 @@ public class DefaultPaths {
 					default:
 						polyPaths = Arrays.asList(new File(System.getProperty("user.home"), ".local/share/PolyMC"),
 								new File(System.getProperty("user.home"), ".var/app/org.polymc.PolyMC/data/polymc"));
+						break;
 					case OSX:
 					case WINDOWS:
 						polyPaths = Arrays.asList(new File(OperatingSystem.OSX.getDataDir(), "PolyMC"));
