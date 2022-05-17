@@ -44,6 +44,9 @@ import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_MINECRAFT;
 import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_POLYMC;
 import io.github.solclient.installer.util.ClientRelease;
 import io.github.solclient.installer.util.Utils;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
@@ -65,14 +68,21 @@ public class Installer {
 	}
 
 	private void installAsync() {
-		File mcJar = Launchers.getVersionJar(data, "1.8.9", launcherType);
-		if(!mcJar.exists()) {
-			callback.setTextStatus("Unable to find Minecraft 1.8.9");
-			callback.onDone(false);
-			return;
-		}
-		File solClientDestination = new File(data, "versions/sol-client");
-		solClientDestination.mkdirs();
+        MinecraJsonPatcher jsonPatcher;
+        try {
+            jsonPatcher = new MinecraJsonPatcher(data, "sol-client");
+            if(!jsonPatcher.load(callback)) {
+                callback.onDone(false);
+                return;
+            }
+            jsonPatcher.removeLibrary("org.apache.logging.log4j:log4j-api:2.0-beta9");
+            jsonPatcher.removeLibrary("org.apache.logging.log4j:log4j-core:2.0-beta9");
+            jsonPatcher.removeLibrary("com.google.code.gson:gson:2.2.4");
+        } catch (Exception ex) {
+            callback.setTextStatus("Failed to initialize!", ex);
+            callback.onDone(false);
+            return;
+        }
 		callback.setProgressBarIndeterminate(true);
 		callback.setTextStatus("Getting version info...");
 		ClientRelease latest;
@@ -103,10 +113,30 @@ public class Installer {
 			callback.setProgressBarIndeterminate(false);
 			callback.setTextStatus("Downloading client...");
 			Utils.downloadFileMonitored(gameJar, new URL(gameJarUrl), callback);
+            jsonPatcher.putLibrary(gameJar, "io.github.solclient:gamejar:"+latest.getId());
 			callback.setTextStatus("Downloading OptiFine...");
 			Utils.downloadFileMonitored(optifineJar, getOptifineUrl(), callback);
+            jsonPatcher.putLibrary(optifineJar, "io.github.solclient:optifine:1.8.9");
 			callback.setTextStatus("Downloading mappings...");
 			Utils.downloadFileMonitored(mappings, new URL(MAPPINGS_URL), callback);
+            jsonPatcher.putFullLibrary("https://repo.maven.apache.org/maven2/org/slick2d/slick2d-core/1.0.2/slick2d-core-1.0.2.jar", 
+                    "org.slick2d:slick2d-core:1.0.2", callback);
+            jsonPatcher.putFullLibrary("https://repo.codemc.io/repository/maven-public/com/logisticscraft/occlusionculling/0.0.5-SNAPSHOT/occlusionculling-0.0.5-20210620.172315-1.jar", 
+                    "com.logisticscraft:occlusionculling:0.0.5-SNAPSHOT", callback);
+            jsonPatcher.putFullLibrary("https://repo.hypixel.net/repository/Hypixel/net/hypixel/hypixel-api-core/4.0/hypixel-api-core-4.0.jar",
+                    "net.hypixel:hypixel-api-core:4.0", callback);
+            jsonPatcher.putFullLibrary("https://repo.spongepowered.org/repository/maven-public/org/spongepowered/mixin/0.7.11-SNAPSHOT/mixin-0.7.11-20180703.121122-1.jar", 
+                    "org.spongepowered:mixin:0.7.11-SNAPSHOT", callback);
+            jsonPatcher.putFullLibrary("https://libraries.minecraft.net/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar", 
+                    "net.minecraft:launchwrapper:1.12", callback);
+            jsonPatcher.putFullLibrary("https://repo.maven.apache.org/maven2/org/ow2/asm/asm-debug-all/5.2/asm-debug-all-5.2.jar", 
+                    "org.ow2.asm:asm-debug-all:5.2", callback);
+            jsonPatcher.putFullLibrary("https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.17.1/log4j-core-2.17.1.jar", 
+                    "org.apache.logging.log4j:log4j-core:2.17.1", callback);
+            jsonPatcher.putFullLibrary("https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-api/2.17.1/log4j-api-2.17.1.jar", 
+                    "org.apache.logging.log4j:log4j-api:2.17.1", callback);
+            jsonPatcher.putFullLibrary("https://libraries.minecraft.net/com/google/code/gson/gson/2.8.8/gson-2.8.8.jar", 
+                    "com.google.code.gson:gson:2.8.8", callback);
 		}
 		catch(Throwable e) {
 			callback.setTextStatus("Download failed", e);
@@ -129,11 +159,13 @@ public class Installer {
 			mappingsFile.close();
 			callback.setTextStatus("Remapping...");
 			net.md_5.specialsource.SpecialSource.main(new String[] {
-				"--in-jar", mcJar.getAbsolutePath(),
-				"--out-jar", new File(solClientDestination,"sol-client.jar").getAbsolutePath(),
+				"--in-jar", jsonPatcher.getSourceClient().getAbsolutePath(),
+				"--out-jar", jsonPatcher.getTargetClient().getAbsolutePath(),
 				"--srg-in", joinedSrg.getAbsolutePath()
 			});
-			callback.setTextStatus("Done!");
+			callback.setTextStatus("Saving...");
+            jsonPatcher.computeTargetClient();
+            jsonPatcher.save("net.minecraft.launchwrapper.Launch", " --tweakClass me.mcblueparrot.client.tweak.Tweaker");
 			callback.onDone(true);
 		}
 		catch(Throwable e) {
