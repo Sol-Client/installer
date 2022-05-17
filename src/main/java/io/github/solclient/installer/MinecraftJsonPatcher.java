@@ -35,7 +35,7 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MinecraJsonPatcher {
+public class MinecraftJsonPatcher {
     
     MessageDigest shaDigest;
     File gameJson;
@@ -46,7 +46,7 @@ public class MinecraJsonPatcher {
     String targetName;
     File libsFolder;
 
-    public MinecraJsonPatcher(File gamedir, String targetVid) throws NoSuchAlgorithmException {
+    public MinecraftJsonPatcher(File gamedir, String targetVid) throws NoSuchAlgorithmException {
         shaDigest = MessageDigest.getInstance("SHA-1");
         gameJson = new File(gamedir, "versions/1.8.9/1.8.9.json");
         gameJar = new File(gamedir, "versions/1.8.9/1.8.9.jar");

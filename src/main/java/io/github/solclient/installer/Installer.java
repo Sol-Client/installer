@@ -69,9 +69,9 @@ public class Installer {
 	}
 
 	private void installAsync() {
-        MinecraJsonPatcher jsonPatcher;
+        MinecraftJsonPatcher jsonPatcher;
         try {
-            jsonPatcher = new MinecraJsonPatcher(data, "sol-client");
+            jsonPatcher = new MinecraftJsonPatcher(data, "sol-client");
             if(!jsonPatcher.load(callback)) {
                 callback.onDone(false);
                 return;
