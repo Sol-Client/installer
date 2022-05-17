@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * MIT License
+ *
+ * Copyright (c) 2022 TheKodeToad, artDev & other contributors
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package me.mcblueparrot.client.installer;
 
@@ -30,10 +49,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
 
-/**
- *
- * @author maks & kode
- */
 public class Installer {
 	private static final String MAPPINGS_URL = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp/1.8.9/mcp-1.8.9-srg.zip";
 	private int launcherType = -1;
@@ -64,7 +79,8 @@ public class Installer {
 		ClientRelease latest;
 		try {
 			latest = ClientRelease.latest();
-		}catch(Throwable e) {
+		}
+		catch(Throwable e) {
 			callback.setTextStatus("Failed to get version info", e);
 			callback.onDone(false);
 			return;
@@ -92,7 +108,8 @@ public class Installer {
 			Utils.downloadFileMonitored(optifineJar, getOptifineUrl(), callback);
 			callback.setTextStatus("Downloading mappings...");
 			Utils.downloadFileMonitored(mappings, new URL(MAPPINGS_URL), callback);
-		}catch(Exception e) {
+		}
+		catch(Throwable e) {
 			callback.setTextStatus("Download failed", e);
 			callback.onDone(false);
 			return;
@@ -112,17 +129,17 @@ public class Installer {
 			IOUtils.copy(mappingsFile.getInputStream(joinedSrgEntry), srg);
 			mappingsFile.close();
 			callback.setTextStatus("Remapping...");
-			net.md_5.specialsource.SpecialSource.main(new String[]{
+			net.md_5.specialsource.SpecialSource.main(new String[] {
 				"--in-jar", mcJar.getAbsolutePath(),
 				"--out-jar", new File(solClientDestination,"sol-client.jar").getAbsolutePath(),
 				"--srg-in", joinedSrg.getAbsolutePath()
 			});
 			callback.setTextStatus("Done!");
 			callback.onDone(true);
-		}catch(Exception e) {
-			callback.setTextStatus("Unable to remap due to "+e.toString());
+		}
+		catch(Throwable e) {
+			callback.setTextStatus("Unable to remap", e);
 			callback.onDone(false);
-			return;
 		}
 	}
 
@@ -135,13 +152,13 @@ public class Installer {
 	}
 
 	private boolean addProfile() throws IOException{
-		switch (launcherType) {
+		switch(launcherType) {
 			default:
 			case LAUNCHER_TYPE_MINECRAFT:
 				File launcherProfiles = new File(data, "launcher_profiles.json");
-				if (!launcherProfiles.exists()) {
+				if(!launcherProfiles.exists()) {
 					launcherProfiles = new File(data, "launcher_profiles_microsoft_store.json");
-					if (!launcherProfiles.exists()) {
+					if(!launcherProfiles.exists()) {
 						return false;
 					}
 				}
