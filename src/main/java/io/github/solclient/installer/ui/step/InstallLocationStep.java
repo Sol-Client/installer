@@ -47,12 +47,12 @@ public class InstallLocationStep extends JPanel {
 		JLabel instruction = new JLabel(Locale.getString(Locale.UI_INSTALL_LOCATION));
 		instruction.setHorizontalAlignment(SwingConstants.CENTER);
 		instruction.setFont(instruction.getFont().deriveFont(20F));
-		instruction.setBounds(0, 25, InstallerFrame.WIDTH, 40);
+		instruction.setBounds(0, 40, InstallerFrame.WIDTH, 40);
 		add(instruction);
 
 		JTextField installationLocation = new JTextField(
 				Launchers.getDefaultLocation(Launchers.getLocationsForLauncher(frame.getInstallerType())).toString());
-		installationLocation.setBounds(InstallerFrame.WIDTH / 2 - 100, 75, 200, 30);
+		installationLocation.setBounds(InstallerFrame.WIDTH / 2 - 100, 90, 200, 30);
 		add(installationLocation);
 		installationLocation.addKeyListener(new KeyAdapter() {
 			@Override
