@@ -61,11 +61,16 @@ public class Installer {
 
     private static final String MAPPINGS_URL = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp/1.8.9/mcp-1.8.9-srg.zip";
     private File data;
-    private volatile int launcherType = -1;
-    private volatile InstallStatusCallback callback;
+    private boolean enableOptifine = false;
+    private int launcherType = -1;
+    private InstallStatusCallback callback;
 
     public void setPath(File f) {
         this.data = f;
+    }
+
+    public void setOptifineEnabled(boolean enabled) {
+        enableOptifine = enabled;
     }
 
     public void install(int launcherType, InstallStatusCallback callback) {
@@ -73,7 +78,7 @@ public class Installer {
         this.callback = callback;
         new Thread(this::installAsync).start();
     }
-	
+
     private void installAsync() {
         MinecraftJsonPatcher jsonPatcher;
         try {
@@ -113,8 +118,8 @@ public class Installer {
         String gameJarUrl = latest.getGameJar();
         File clientJar = new File(cacheFolder, "sol-client.jar");
         File optifineJar = new File(cacheFolder, "optifine.jar");
-		File optifineJarMod = new File(cacheFolder, "optifine-mod.jar");
-		File patchedJar = new File(cacheFolder, "patched.jar");
+        File optifineJarMod = new File(cacheFolder, "optifine-mod.jar");
+        File patchedJar = new File(cacheFolder, "patched.jar");
         File mappings = new File(cacheFolder, "mappings.zip");
         File joinedSrg = new File(cacheFolder, "joined.srg");
         try {
@@ -153,43 +158,52 @@ public class Installer {
             return;
         }
         try {
+            if (enableOptifine) {
+                callback.setProgressBarIndeterminate(false);
+                callback.setTextStatus(Locale.getString(Locale.MSG_EXTRACTING_OPTIFINE));
+                URLClassLoader classLoader = new URLClassLoader(new URL[]{optifineJar.toURI().toURL()}, null);
+                Class<?> patcher = Class.forName("optifine.Patcher", false, classLoader);
+                Method processMethod = patcher.getMethod("process", File.class, File.class, File.class);
+                processMethod.invoke(processMethod, jsonPatcher.getSourceClient(), optifineJar, optifineJarMod);
+                callback.setTextStatus(Locale.getString(Locale.MSG_INSTALLING_OPTIFINE));
+                try ( ZipFile optifinePatches = new ZipFile(optifineJarMod);  
+                      ZipFile srcZip = new ZipFile(jsonPatcher.getSourceClient());
+                      ZipOutputStream patchedOut = new ZipOutputStream(new FileOutputStream(patchedJar))) {
+                    Enumeration<? extends ZipEntry> srcEntries = srcZip.entries();
+                    int ctr = 0;
+                    int max = srcZip.size();
+                    while (srcEntries.hasMoreElements()) {
+                        ZipEntry entry = srcEntries.nextElement();
+                        InputStream in;
+                        ZipEntry patchEntry = optifinePatches.getEntry(entry.getName());
+                        if (patchEntry != null) {
+                            in = optifinePatches.getInputStream(patchEntry);
+                        } else {
+                            in = srcZip.getInputStream(entry);
+                        }
+                        patchedOut.putNextEntry(new ZipEntry(entry.getName()));
+                        IOUtils.copy(in, patchedOut);
+                        in.close();
+                        callback.setProgressBarValues(max, ctr);
+                        ctr++;
+                    }
+                    ctr = 0;
+                    max = optifinePatches.size();
+                    Enumeration<? extends ZipEntry> patchEntries = optifinePatches.entries();
+                    while (patchEntries.hasMoreElements()) {
+                        ZipEntry entry = patchEntries.nextElement();
+                        if (srcZip.getEntry(entry.getName()) == null) {
+                            patchedOut.putNextEntry(new ZipEntry(entry.getName()));
+                            InputStream in = optifinePatches.getInputStream(entry);
+                            IOUtils.copy(in, patchedOut);
+                            in.close();
+                        }
+                        callback.setProgressBarValues(max, ctr);
+                        ctr++;
+                    }
+                }
+            }
             callback.setProgressBarIndeterminate(true);
-			callback.setTextStatus(Locale.getString(Locale.MSG_EXTRACTING_OPTIFINE));
-			callback.setProgressBarIndeterminate(true);
-			URLClassLoader classLoader = new URLClassLoader(new URL[] { optifineJar.toURI().toURL() }, null);
-			Class<?> patcher = Class.forName("optifine.Patcher", false, classLoader);
-			Method processMethod = patcher.getMethod("process", File.class, File.class, File.class);
-			processMethod.invoke(processMethod, jsonPatcher.getSourceClient(), optifineJar, optifineJarMod);
-			callback.setTextStatus(Locale.getString(Locale.MSG_INSTALLING_OPTIFINE));
-			try(ZipFile optifinePatches = new ZipFile(optifineJarMod);
-					ZipFile srcZip = new ZipFile(jsonPatcher.getSourceClient());
-					ZipOutputStream patchedOut = new ZipOutputStream(new FileOutputStream(patchedJar))) {
-				Enumeration<? extends ZipEntry> srcEntries = srcZip.entries();
-				while(srcEntries.hasMoreElements()) {
-					ZipEntry entry = srcEntries.nextElement();
-					InputStream in;
-					ZipEntry patchEntry = optifinePatches.getEntry(entry.getName());
-					if(patchEntry != null) {
-						in = optifinePatches.getInputStream(patchEntry);
-					}
-					else {
-						in = srcZip.getInputStream(entry);
-					}
-					patchedOut.putNextEntry(new ZipEntry(entry.getName()));
-					IOUtils.copy(in, patchedOut);
-					in.close();
-				}
-				Enumeration<? extends ZipEntry> patchEntries = optifinePatches.entries();
-				while(patchEntries.hasMoreElements()) {
-					ZipEntry entry = patchEntries.nextElement();
-					if(srcZip.getEntry(entry.getName()) == null) {
-						patchedOut.putNextEntry(new ZipEntry(entry.getName()));
-						InputStream in = optifinePatches.getInputStream(entry);
-						IOUtils.copy(in, patchedOut);
-						in.close();
-					}
-				}
-			}
             callback.setTextStatus(Locale.getString(Locale.MSG_UNPACKING_MAPPINGS));
             ZipFile mappingsFile = new ZipFile(mappings);
             ZipEntry joinedSrgEntry = mappingsFile.getEntry("joined.srg");
@@ -204,7 +218,7 @@ public class Installer {
             mappingsFile.close();
             callback.setTextStatus(Locale.getString(Locale.MSG_REMAPPING));
             net.md_5.specialsource.SpecialSource.main(new String[]{
-                "--in-jar", patchedJar.getAbsolutePath(),
+                "--in-jar", enableOptifine ? patchedJar.getAbsolutePath() : jsonPatcher.getSourceClient().getAbsolutePath(),
                 "--out-jar", jsonPatcher.getTargetClient().getAbsolutePath(),
                 "--srg-in", joinedSrg.getAbsolutePath()
             });

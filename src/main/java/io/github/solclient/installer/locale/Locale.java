@@ -45,6 +45,8 @@ public class Locale {
     public static final int MSG_EXTRACTING_OPTIFINE = 25;
     public static final int MSG_INSTALLING_OPTIFINE = 26;
 	public static int UI_FINISH = 27;
+    public static int UI_ENABLE_OPTIFINE = 28;
+    public static int UI_CUSTOMIZE = 29;
     
     public static void setLocale(java.util.Locale locale) {
         localeMap.clear();
@@ -105,6 +107,8 @@ public class Locale {
         localeMap.put(MSG_EXTRACTING_OPTIFINE, "Extracting OptiFine...");
         localeMap.put(MSG_INSTALLING_OPTIFINE, "Installing OptiFine...");
         localeMap.put(UI_FINISH, "Finish");
+        localeMap.put(UI_ENABLE_OPTIFINE, "Add OptiFine");
+        localeMap.put(UI_CUSTOMIZE, "Customize");
     }
     
     public static String getString(int msg) {

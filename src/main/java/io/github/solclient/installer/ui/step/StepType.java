@@ -34,8 +34,9 @@ import io.github.solclient.installer.ui.InstallerFrame;
 public enum StepType {
 	CHOOSE_LAUNCHER(ChooseLauncherStep::new, false),
 	INSTALL_LOCATION(InstallLocationStep::new, true),
+    CUSTOMIZE(CustomizeStep::new, true),
 	INSTALL(InstallStep::new, true);
-	//CUSTOMISE(CustomiseStep::new);
+	
 
 	private JPanel cachedPanel;
 	private Function<InstallerFrame, JPanel> panel;

@@ -17,7 +17,7 @@ dependencies {
 }
 jar {
   manifest {
-	attributes 'Main-Class': 'me.mcblueparrot.client.installer.Main'
+	attributes 'Main-Class': 'io.github.solclient.installer.Main'
   }
   from {
 	configurations.default.collect { it.isDirectory() ? it : zipTree(it) }
