@@ -27,7 +27,7 @@ public class InstallLocationStep extends JPanel {
 		instruction.setFont(instruction.getFont().deriveFont(20F));
 		instruction.setBounds(0, 25, InstallerFrame.WIDTH, 40);
 		add(instruction);
-                
+				
 		JTextField installationLocation = new JTextField(
 				DefaultPaths.getDefaultLocation(DefaultPaths.getLocationsForLauncher(InstallerFrame.INSTANCE.getInstallerType())).toString());
 		installationLocation.setBounds(InstallerFrame.WIDTH / 2 - 100, 75, 200, 30);
@@ -49,7 +49,7 @@ public class InstallLocationStep extends JPanel {
 				JOptionPane.showMessageDialog(frame, "Could not find the specified file", "Oh Dear", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-                        frame.getInstaller().setPath(file);
+						frame.getInstaller().setPath(file);
 			frame.next();
 		});
 		add(installButton);

@@ -35,7 +35,7 @@ public class ChooseLauncherStep extends JPanel {
 		installPolyMC.setBounds(260, 90, 100, 30);
 		add(installPolyMC);
 		installPolyMC.addActionListener((event) -> {
-                        frame.setInstallerType(DefaultPaths.LAUNCHER_TYPE_POLYMC);
+						frame.setInstallerType(DefaultPaths.LAUNCHER_TYPE_POLYMC);
 			//frame.setLauncher(Launcher.POLYMC);
 			frame.next();
 		});

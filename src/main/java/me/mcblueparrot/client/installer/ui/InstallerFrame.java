@@ -21,7 +21,7 @@ public class InstallerFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private StepType step;
 	private Installer installer = new Installer(); 
-        private int launcherType;
+		private int launcherType;
 	private JButton previous;
 
 	public InstallerFrame() {
@@ -93,9 +93,9 @@ public class InstallerFrame extends JFrame {
 	public void setInstallerType(int launcher) {
 		this.launcherType = launcher;
 	}
-        public int getInstallerType() {
-            return launcherType;
-        }
+		public int getInstallerType() {
+			return launcherType;
+		}
 
 	public Installer getInstaller() {
 		return this.installer;
