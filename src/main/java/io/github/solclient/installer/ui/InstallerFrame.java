@@ -37,95 +37,95 @@ import io.github.solclient.installer.ui.step.StepType;
 
 public class InstallerFrame extends JFrame {
 
-    public static final InstallerFrame INSTANCE = new InstallerFrame();
-    public static final int WIDTH = 500;
-    public static final int HEIGHT = 300;
+	public static final InstallerFrame INSTANCE = new InstallerFrame();
+	public static final int WIDTH = 500;
+	public static final int HEIGHT = 300;
 
-    private static final long serialVersionUID = 1L;
-    private StepType step;
-    private Installer installer = new Installer();
-    private int launcherType;
-    private JButton previous;
-    private JButton next;
-    private Runnable nextAction;
+	private static final long serialVersionUID = 1L;
+	private StepType step;
+	private Installer installer = new Installer();
+	private int launcherType;
+	private JButton previous;
+	private JButton next;
+	private Runnable nextAction;
 
-    public InstallerFrame() {
-        setSize(WIDTH, HEIGHT);
-        setResizable(false);
-        setLayout(null);
-        setIconImage(new ImageIcon(getClass().getResource("/logo.png")).getImage());
+	public InstallerFrame() {
+		setSize(WIDTH, HEIGHT);
+		setResizable(false);
+		setLayout(null);
+		setIconImage(new ImageIcon(getClass().getResource("/logo.png")).getImage());
 
-        JLabel title = new JLabel("Sol Client");
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        title.setFont(title.getFont().deriveFont(Font.BOLD, 40F));
-        title.setBounds(0, 15, WIDTH, 40);
-        add(title);
+		JLabel title = new JLabel("Sol Client");
+		title.setHorizontalAlignment(SwingConstants.CENTER);
+		title.setFont(title.getFont().deriveFont(Font.BOLD, 40F));
+		title.setBounds(0, 15, WIDTH, 40);
+		add(title);
 
-        previous = new JButton("< Back");
-        previous.setBounds(20, HEIGHT - 80, 100, 30);
-        previous.addActionListener((event) -> previous());
-        add(previous);
+		previous = new JButton("< Back");
+		previous.setBounds(20, HEIGHT - 80, 100, 30);
+		previous.addActionListener((event) -> previous());
+		add(previous);
 
-        next = new JButton("Next >");
-        next.setBounds(WIDTH - 120, HEIGHT - 80, 100, 30);
-        next.addActionListener((event) -> {
-            nextAction.run();
-        });
-        add(next);
+		next = new JButton("Next >");
+		next.setBounds(WIDTH - 120, HEIGHT - 80, 100, 30);
+		next.addActionListener((event) -> {
+			nextAction.run();
+		});
+		add(next);
 
-        setStep(StepType.CHOOSE_LAUNCHER);
-    }
+		setStep(StepType.CHOOSE_LAUNCHER);
+	}
 
-    private void setStep(StepType step) {
-        if (this.step != null) {
-            remove(this.step.getPanel(this));
-        }
-        this.step = step;
-        add(step.getPanel(this));
-        previous.setVisible(step.hasPrevious());
-        step.getPanel(this).setBounds(0, 50, getWidth(), HEIGHT - 130);
-        step.getPanel(this).updateUI();
-        this.repaint();
-        next.setVisible(step.nextButtonShown());
-    }
+	private void setStep(StepType step) {
+		if (this.step != null) {
+			remove(this.step.getPanel(this));
+		}
+		this.step = step;
+		add(step.getPanel(this));
+		previous.setVisible(step.hasPrevious());
+		step.getPanel(this).setBounds(0, 50, getWidth(), HEIGHT - 130);
+		step.getPanel(this).updateUI();
+		this.repaint();
+		next.setVisible(step.nextButtonShown());
+	}
 
-    @Override
-    public String getTitle() {
-        return "Sol Client Installer";
-    }
+	@Override
+	public String getTitle() {
+		return "Sol Client Installer";
+	}
 
-    public void setInstallerType(int launcher) {
-        this.launcherType = launcher;
-    }
+	public void setInstallerType(int launcher) {
+		this.launcherType = launcher;
+	}
 
-    public int getInstallerType() {
-        return launcherType;
-    }
+	public int getInstallerType() {
+		return launcherType;
+	}
 
-    public Installer getInstaller() {
-        return this.installer;
-    }
+	public Installer getInstaller() {
+		return this.installer;
+	}
 
-    public void setNextButtonAction(Runnable r) {
-        this.nextAction = r;
-    }
-    
-    public void showNextButton(boolean isShown) {
-        next.setVisible(isShown);
-    }
+	public void setNextButtonAction(Runnable r) {
+		this.nextAction = r;
+	}
+	
+	public void showNextButton(boolean isShown) {
+		next.setVisible(isShown);
+	}
 
-    public void previous() {
-        if (this.step.hasPrevious()) {
-            StepType current = this.step;
-            setStep(this.step.previous());
-            current.clearState();
-        }
-    }
+	public void previous() {
+		if (this.step.hasPrevious()) {
+			StepType current = this.step;
+			setStep(this.step.previous());
+			current.clearState();
+		}
+	}
 
-    public void next() {
-        if (this.step.hasNext()) {
-            setStep(this.step.next());
-        }
-    }
+	public void next() {
+		if (this.step.hasNext()) {
+			setStep(this.step.next());
+		}
+	}
 
 }

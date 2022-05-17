@@ -36,132 +36,132 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MinecraftJsonPatcher {
-    
-    MessageDigest shaDigest;
-    File gameJson;
-    File targetJson;
-    JSONObject gameJsonObject;
-    File gameJar;
-    File targetJar;
-    String targetName;
-    File libsFolder;
+	
+	MessageDigest shaDigest;
+	File gameJson;
+	File targetJson;
+	JSONObject gameJsonObject;
+	File gameJar;
+	File targetJar;
+	String targetName;
+	File libsFolder;
 
-    public MinecraftJsonPatcher(File gamedir, String targetVid) throws NoSuchAlgorithmException {
-        shaDigest = MessageDigest.getInstance("SHA-1");
-        gameJson = new File(gamedir, "versions/1.8.9/1.8.9.json");
-        gameJar = new File(gamedir, "versions/1.8.9/1.8.9.jar");
-        targetName = targetVid;
-        targetJson = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".json");
-        targetJar = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".json");
-        targetJson.getParentFile().mkdirs();
-        libsFolder = new File(gamedir, "libraries");
-    }
+	public MinecraftJsonPatcher(File gamedir, String targetVid) throws NoSuchAlgorithmException {
+		shaDigest = MessageDigest.getInstance("SHA-1");
+		gameJson = new File(gamedir, "versions/1.8.9/1.8.9.json");
+		gameJar = new File(gamedir, "versions/1.8.9/1.8.9.jar");
+		targetName = targetVid;
+		targetJson = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".json");
+		targetJar = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".json");
+		targetJson.getParentFile().mkdirs();
+		libsFolder = new File(gamedir, "libraries");
+	}
 
-    public boolean load(InstallStatusCallback cb) throws IOException {
-        gameJsonObject = new JSONObject(FileUtils.readFileToString(gameJson, "UTF-8"));
-        JSONObject downloads = gameJsonObject.getJSONObject("downloads");
-        if(downloads != null) {
-            JSONObject client = (JSONObject) downloads.get("client");
-            if(!verify(gameJar, client.getString("sha1"))) {
-                cb.setTextStatus("Downloading Minecraft 1.8.9 game .jar");
-                Utils.downloadFileMonitored(gameJar,new URL(client.getString("url")), cb);
-            }else{
-                cb.setTextStatus("Minecraft jar already present");
-            }
-        }else {
-            cb.setTextStatus("Damaged Minecraft json");
-            return false;
-        }
-        gameJsonObject.put("id", targetName);
-        return true;
-    }
-    
-    public void save(String newMain, String appendArgs) throws IOException {
-        gameJsonObject.put("mainClass", newMain);
-        gameJsonObject.put("minecraftArguments", gameJsonObject.getString("minecraftArguments").concat(appendArgs));
-        FileUtils.write(targetJson, gameJsonObject.toString(2), StandardCharsets.UTF_8);
-    }
-    
-    public void putLibrary(File origin, String libName) throws IOException {
-        JSONArray libraries = gameJsonObject.getJSONArray("libraries");
-        JSONObject library = new JSONObject();
-        library.put("name", libName);
-        libraries.put(library);
-        FileUtils.copyFile(origin, new File(libsFolder, mavenNameToPath(libName)));
-    }
-    
-    public void removeLibrary(String mavenName) {
-       JSONArray libraries = gameJsonObject.getJSONArray("libraries");
-       for(int i = 0; i < libraries.length(); i++) {
-           if(libraries.getJSONObject(i).getString("name").equals(mavenName)) {
-               libraries.remove(i);
-               return;
-           }
-       }
-    }
+	public boolean load(InstallStatusCallback cb) throws IOException {
+		gameJsonObject = new JSONObject(FileUtils.readFileToString(gameJson, "UTF-8"));
+		JSONObject downloads = gameJsonObject.getJSONObject("downloads");
+		if(downloads != null) {
+			JSONObject client = (JSONObject) downloads.get("client");
+			if(!verify(gameJar, client.getString("sha1"))) {
+				cb.setTextStatus("Downloading Minecraft 1.8.9 game .jar");
+				Utils.downloadFileMonitored(gameJar,new URL(client.getString("url")), cb);
+			}else{
+				cb.setTextStatus("Minecraft jar already present");
+			}
+		}else {
+			cb.setTextStatus("Damaged Minecraft json");
+			return false;
+		}
+		gameJsonObject.put("id", targetName);
+		return true;
+	}
+	
+	public void save(String newMain, String appendArgs) throws IOException {
+		gameJsonObject.put("mainClass", newMain);
+		gameJsonObject.put("minecraftArguments", gameJsonObject.getString("minecraftArguments").concat(appendArgs));
+		FileUtils.write(targetJson, gameJsonObject.toString(2), StandardCharsets.UTF_8);
+	}
+	
+	public void putLibrary(File origin, String libName) throws IOException {
+		JSONArray libraries = gameJsonObject.getJSONArray("libraries");
+		JSONObject library = new JSONObject();
+		library.put("name", libName);
+		libraries.put(library);
+		FileUtils.copyFile(origin, new File(libsFolder, mavenNameToPath(libName)));
+	}
+	
+	public void removeLibrary(String mavenName) {
+	   JSONArray libraries = gameJsonObject.getJSONArray("libraries");
+	   for(int i = 0; i < libraries.length(); i++) {
+		   if(libraries.getJSONObject(i).getString("name").equals(mavenName)) {
+			   libraries.remove(i);
+			   return;
+		   }
+	   }
+	}
    public void putFullLibrary(String url, String mavenName, InstallStatusCallback cb) throws IOException{
-       String libLocalPath = mavenNameToPath(mavenName);
-       File libPath = new File(libsFolder, libLocalPath);
-       cb.setTextStatus("Downloading "+mavenName);
+	   String libLocalPath = mavenNameToPath(mavenName);
+	   File libPath = new File(libsFolder, libLocalPath);
+	   cb.setTextStatus("Downloading "+mavenName);
 	   if(!libPath.getParentFile().exists() && !libPath.getParentFile().mkdirs()) {
 		   cb.setTextStatus("Could not create folder " + libPath.getParentFile());
 	   }
-       Utils.downloadFileMonitored(libPath, new URL(url), cb);
-       JSONArray libraries = gameJsonObject.getJSONArray("libraries");
-       JSONObject artifact = new JSONObject();
-       artifact.put("url", url);
-       artifact.put("path", libLocalPath);
-       artifact.put("size", libPath.length());
-       artifact.put("sha1", compute(libPath));
-       JSONObject library = new JSONObject();
-       library.put("name", mavenName);
-       library.put("downloads", new JSONObject().put("artifact", artifact));
-       libraries.put(library);
+	   Utils.downloadFileMonitored(libPath, new URL(url), cb);
+	   JSONArray libraries = gameJsonObject.getJSONArray("libraries");
+	   JSONObject artifact = new JSONObject();
+	   artifact.put("url", url);
+	   artifact.put("path", libLocalPath);
+	   artifact.put("size", libPath.length());
+	   artifact.put("sha1", compute(libPath));
+	   JSONObject library = new JSONObject();
+	   library.put("name", mavenName);
+	   library.put("downloads", new JSONObject().put("artifact", artifact));
+	   libraries.put(library);
    } 
-    
-    public File getSourceClient() {
-        return gameJar;
-    }
-    
-    public File getTargetClient() {
-        return targetJar;
-    }
-    
-    public void computeTargetClient() throws IOException {
-        JSONObject downloads = gameJsonObject.getJSONObject("downloads");
-        JSONObject newClient = new JSONObject();
-        newClient.put("url", "");
-        newClient.put("sha1", compute(targetJar));
-        newClient.put("size", targetJar.length());
-        downloads.put("client", newClient);
-    }
-    
-    private String mavenNameToPath(String mavenName) {
-        String[] mvnNameSplit = mavenName.split(":");
-        return mvnNameSplit[0].replaceAll("\\.", "/") + "/" + mvnNameSplit[1] + "/" + mvnNameSplit[2] + "/" + mvnNameSplit[1] + "-" + mvnNameSplit[2] + ".jar";
-    }
-    
-    private String compute(File input) throws IOException {
-        return byteToHex(shaDigest.digest(FileUtils.readFileToByteArray(input)));
-    }
-    
-    private boolean verify(File input, String sha1) throws IOException {
-        if(!input.exists())
-            return false;
-        if(sha1 == null)
-            return true;
-        String f_sha1 = byteToHex(shaDigest.digest(FileUtils.readFileToByteArray(input)));
-        return f_sha1.equals(sha1);
-    }
+	
+	public File getSourceClient() {
+		return gameJar;
+	}
+	
+	public File getTargetClient() {
+		return targetJar;
+	}
+	
+	public void computeTargetClient() throws IOException {
+		JSONObject downloads = gameJsonObject.getJSONObject("downloads");
+		JSONObject newClient = new JSONObject();
+		newClient.put("url", "");
+		newClient.put("sha1", compute(targetJar));
+		newClient.put("size", targetJar.length());
+		downloads.put("client", newClient);
+	}
+	
+	private String mavenNameToPath(String mavenName) {
+		String[] mvnNameSplit = mavenName.split(":");
+		return mvnNameSplit[0].replaceAll("\\.", "/") + "/" + mvnNameSplit[1] + "/" + mvnNameSplit[2] + "/" + mvnNameSplit[1] + "-" + mvnNameSplit[2] + ".jar";
+	}
+	
+	private String compute(File input) throws IOException {
+		return byteToHex(shaDigest.digest(FileUtils.readFileToByteArray(input)));
+	}
+	
+	private boolean verify(File input, String sha1) throws IOException {
+		if(!input.exists())
+			return false;
+		if(sha1 == null)
+			return true;
+		String f_sha1 = byteToHex(shaDigest.digest(FileUtils.readFileToByteArray(input)));
+		return f_sha1.equals(sha1);
+	}
 
-    private static String byteToHex(final byte[] hash) {
-        Formatter formatter = new Formatter();
-        for (byte b : hash) {
-            formatter.format("%02x", b);
-        }
-        String result = formatter.toString();
-        formatter.close();
-        return result;
-    }
+	private static String byteToHex(final byte[] hash) {
+		Formatter formatter = new Formatter();
+		for (byte b : hash) {
+			formatter.format("%02x", b);
+		}
+		String result = formatter.toString();
+		formatter.close();
+		return result;
+	}
 
 }
