@@ -40,6 +40,8 @@ import org.json.JSONObject;
 
 public class Utils {
 
+	public static final String USER_AGENT = "Mozilla/5.0";
+
 	public static JSONObject json(URL url) throws IOException {
 		return new JSONObject(IOUtils.toString(url, StandardCharsets.UTF_8));
 	}
@@ -55,7 +57,7 @@ public class Utils {
 	public static void downloadFileMonitored(File destination, URL url, InstallStatusCallback callback) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
-		conn.setDoOutput(true);
+		conn.setRequestProperty("User-Agent", USER_AGENT);
 		conn.connect();
 		InputStream stream = conn.getInputStream();
 		FileOutputStream output = new FileOutputStream(destination);

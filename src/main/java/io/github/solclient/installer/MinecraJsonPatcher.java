@@ -103,6 +103,9 @@ public class MinecraJsonPatcher {
        String libLocalPath = mavenNameToPath(mavenName);
        File libPath = new File(libsFolder, libLocalPath);
        cb.setTextStatus("Downloading "+mavenName);
+	   if(!libPath.getParentFile().exists() && !libPath.getParentFile().mkdirs()) {
+		   cb.setTextStatus("Could not create folder " + libPath.getParentFile());
+	   }
        Utils.downloadFileMonitored(libPath, new URL(url), cb);
        JSONArray libraries = gameJsonObject.getJSONArray("libraries");
        JSONObject artifact = new JSONObject();

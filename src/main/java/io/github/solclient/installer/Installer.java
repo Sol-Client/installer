@@ -44,6 +44,7 @@ import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_MINECRAFT;
 import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_POLYMC;
 import io.github.solclient.installer.util.ClientRelease;
 import io.github.solclient.installer.util.Utils;
+import java.net.URLConnection;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -175,7 +176,9 @@ public class Installer {
 	}
 
 	private URL getOptifineUrl() throws IOException{
-		String downloadPage = IOUtils.toString(new URL("https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_M5.jar"), StandardCharsets.UTF_8);
+		URLConnection connection = new URL("https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_M5.jar").openConnection();
+		connection.setRequestProperty("User-Agent", Utils.USER_AGENT);
+		String downloadPage = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
 		String link = downloadPage.substring(downloadPage.indexOf("downloadx"));
 		link = link.substring(0, link.indexOf("'"));
 		link = "https://optifine.net/" + link;
