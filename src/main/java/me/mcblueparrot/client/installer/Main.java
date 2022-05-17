@@ -11,7 +11,7 @@ import me.mcblueparrot.client.installer.ui.InstallerFrame;
 public class Main {
 
 	public static void main(String[] args) {
-				System.setProperty("awt.useSystemAAFontSettings", "on");
+		System.setProperty("awt.useSystemAAFontSettings", "on");
 		FlatDarculaLaf.setup();
 
 		InstallerFrame frame = InstallerFrame.INSTANCE;

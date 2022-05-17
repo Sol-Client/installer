@@ -12,6 +12,10 @@ import me.mcblueparrot.client.installer.Installer;
 
 import me.mcblueparrot.client.installer.ui.step.StepType;
 
+/**
+ * 
+ * @author kode
+ */
 public class InstallerFrame extends JFrame {
 
 	public static final InstallerFrame INSTANCE = new InstallerFrame();
@@ -21,7 +25,7 @@ public class InstallerFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private StepType step;
 	private Installer installer = new Installer(); 
-		private int launcherType;
+	private int launcherType;
 	private JButton previous;
 
 	public InstallerFrame() {
@@ -42,35 +46,6 @@ public class InstallerFrame extends JFrame {
 		add(previous);
 
 		setStep(StepType.CHOOSE_LAUNCHER);
-
-//		JButton next = new JButton("Next >");
-//		next.setBounds(WIDTH - 110, HEIGHT - 80, 100, 30);
-//		add(next);
-
-
-//		JLabel instruction = new JLabel("Select your launcher");
-//		instruction.setHorizontalAlignment(SwingConstants.CENTER);
-//		instruction.setFont(instruction.getFont().deriveFont(20F));
-//		instruction.setBounds(0, 55, getWidth(), 40);
-//		add(instruction);
-//
-//		JButton installMinecraft = new JButton("Minecraft");
-//		installMinecraft.setBounds(140, 115, 100, 30);
-//		add(installMinecraft);
-//		installMinecraft.addActionListener((event) -> {
-//
-//		});
-//
-//		JButton installMultiMC = new JButton("MultiMC");
-//		installMultiMC.setBounds(260, 115, 100, 30);
-//		add(installMultiMC);
-
-//		JTextField installLocation = new JTextField("/home/me/.minecraft");
-//		installLocation.setBounds(getWidth() / 2 - 75, 150, 250, 30);
-//		add(installLocation);
-
-//		add(new JButton("Minecraft"));
-//		add(new JButton("MultiMC"));
 	}
 
 	private void setStep(StepType step) {
@@ -93,9 +68,10 @@ public class InstallerFrame extends JFrame {
 	public void setInstallerType(int launcher) {
 		this.launcherType = launcher;
 	}
-		public int getInstallerType() {
-			return launcherType;
-		}
+	
+	public int getInstallerType() {
+		return launcherType;
+	}
 
 	public Installer getInstaller() {
 		return this.installer;

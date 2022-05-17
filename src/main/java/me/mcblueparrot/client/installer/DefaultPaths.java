@@ -50,11 +50,11 @@ public class DefaultPaths {
 	private static long deepLastModified(File file) {
 		long lastModified = file.lastModified();
 
-		if (!file.isDirectory()) {
+		if(!file.isDirectory()) {
 			return lastModified;
 		}
 
-		for (File subFile : file.listFiles()) {
+		for(File subFile : file.listFiles()) {
 			lastModified = Math.max(lastModified, deepLastModified(subFile));
 		}
 

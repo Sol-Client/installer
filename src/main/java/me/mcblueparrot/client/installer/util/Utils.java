@@ -14,6 +14,10 @@ import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * 
+ * @author maks & kode
+ */
 public class Utils {
 
 	public static JSONObject json(URL url) throws IOException {
