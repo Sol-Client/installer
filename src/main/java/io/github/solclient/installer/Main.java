@@ -39,7 +39,7 @@ public class Main {
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		FlatDarculaLaf.setup();
         Locale.setLocale(java.util.Locale.getDefault());
-		InstallerFrame frame = InstallerFrame.INSTANCE;
+		InstallerFrame frame = new InstallerFrame();
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);

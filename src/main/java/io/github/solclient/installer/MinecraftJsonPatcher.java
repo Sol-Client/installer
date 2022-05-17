@@ -53,7 +53,7 @@ public class MinecraftJsonPatcher {
 		gameJar = new File(gamedir, "versions/1.8.9/1.8.9.jar");
 		targetName = targetVid;
 		targetJson = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".json");
-		targetJar = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".json");
+		targetJar = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".jar");
 		targetJson.getParentFile().mkdirs();
 		libsFolder = new File(gamedir, "libraries");
 	}
@@ -125,7 +125,7 @@ public class MinecraftJsonPatcher {
 	public File getSourceClient() {
 		return gameJar;
 	}
-	
+
 	public File getTargetClient() {
 		return targetJar;
 	}

@@ -32,15 +32,16 @@ import javax.swing.SwingUtilities;
 
 public class InstallStep extends javax.swing.JPanel implements InstallStatusCallback {
 
+	private InstallerFrame frame;
 	private int lastMax = 100;
+	
 	/**
 	 * Creates new form InstallStep
 	 */
 	public InstallStep(InstallerFrame frame) {
+		this.frame = frame;
 		initComponents();
-		frame.setNextButtonAction(()-> {
-			System.exit(0);
-		});
+		frame.enableNextButton(false);
 		frame.getInstaller().install(frame.getInstallerType(), this);
 	}
 
@@ -126,7 +127,7 @@ public class InstallStep extends javax.swing.JPanel implements InstallStatusCall
             }
 			installProgressBar.setIndeterminate(false);
 			installProgressBar.setValue(0);
-			InstallerFrame.INSTANCE.showNextButton(true);
+			frame.enableNextButton(true);
 		});
 	}
 }

@@ -42,6 +42,9 @@ public class Locale {
     public static final int UI_OH_DEAR = 22;
     public static final int UI_NO_GAMEDIR = 23;
     public static final int MSG_DONE = 24;
+    public static final int MSG_EXTRACTING_OPTIFINE = 25;
+    public static final int MSG_INSTALLING_OPTIFINE = 26;
+	public static int UI_FINISH = 27;
     
     public static void setLocale(java.util.Locale locale) {
         localeMap.clear();
@@ -63,11 +66,9 @@ public class Locale {
     private static void parseLocale(URL is) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is.openStream()));
-            String line = null;
-            int ctr = 0;
-            while((line = reader.readLine()) != null) {
+            String line;
+            for(int ctr = 0; (line = reader.readLine()) != null; ctr++) {
                 localeMap.put(ctr, line.replace("\\n", "\n"));
-                ctr++;
             }
         }catch(IOException e) {
             e.printStackTrace();
@@ -80,9 +81,9 @@ public class Locale {
         localeMap.put(MSG_GETTING_VERSION_INFO_FAILED, "Failed to get version info");
         localeMap.put(MSG_INSTALLING_VERSION, "Using version %s");
         localeMap.put(MSG_CACHE_FAILED, "Failed to create a cache folder");
-        localeMap.put(MSG_DOWNLOADING_CLIENT, "Downloading client");
-        localeMap.put(MSG_DOWNLOADING_MAPPINGS, "Downloading mappings");
-        localeMap.put(MSG_DOWNLOADING_GENERIC, "Downloading %s");
+        localeMap.put(MSG_DOWNLOADING_CLIENT, "Downloading client...");
+        localeMap.put(MSG_DOWNLOADING_MAPPINGS, "Downloading mappings...");
+        localeMap.put(MSG_DOWNLOADING_GENERIC, "Downloading %s...");
         localeMap.put(MSG_NO_MAPPINGS, "Can't find mappings!");
         localeMap.put(MSG_REMAPPING, "Remapping...");
         localeMap.put(MSG_SAVING, "Saving...");
@@ -99,9 +100,11 @@ public class Locale {
         localeMap.put(UI_SELECT_LAUNCHER, "Select your launcher type");
         localeMap.put(UI_INSTALL_LOCATION, "Install location");
         localeMap.put(UI_OH_DEAR, "Oh Dear!");
-        localeMap.put(UI_NO_GAMEDIR, "This game directory does not exist or isn't accessible!");
+        localeMap.put(UI_NO_GAMEDIR, "Could not access the specified game folder");
         localeMap.put(MSG_DONE, "Done!");
-
+        localeMap.put(MSG_EXTRACTING_OPTIFINE, "Extracting OptiFine...");
+        localeMap.put(MSG_INSTALLING_OPTIFINE, "Installing OptiFine...");
+        localeMap.put(UI_FINISH, "Finish");
     }
     
     public static String getString(int msg) {

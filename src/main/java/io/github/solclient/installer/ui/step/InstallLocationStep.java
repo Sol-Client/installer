@@ -51,7 +51,7 @@ public class InstallLocationStep extends JPanel {
 		add(instruction);
 
 		JTextField installationLocation = new JTextField(
-				Launchers.getDefaultLocation(Launchers.getLocationsForLauncher(InstallerFrame.INSTANCE.getInstallerType())).toString());
+				Launchers.getDefaultLocation(Launchers.getLocationsForLauncher(frame.getInstallerType())).toString());
 		installationLocation.setBounds(InstallerFrame.WIDTH / 2 - 100, 75, 200, 30);
 		add(installationLocation);
 		installationLocation.addKeyListener(new KeyAdapter() {
@@ -69,7 +69,6 @@ public class InstallLocationStep extends JPanel {
 				return;
 			}
 			frame.getInstaller().setPath(file);
-			frame.next();
 		});
 	}
 

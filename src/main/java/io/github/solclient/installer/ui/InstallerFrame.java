@@ -38,7 +38,6 @@ import io.github.solclient.installer.ui.step.StepType;
 
 public class InstallerFrame extends JFrame {
 
-	public static final InstallerFrame INSTANCE = new InstallerFrame();
 	public static final int WIDTH = 500;
 	public static final int HEIGHT = 300;
 
@@ -71,6 +70,8 @@ public class InstallerFrame extends JFrame {
 		next.setBounds(WIDTH - 120, HEIGHT - 80, 100, 30);
 		next.addActionListener((event) -> {
 			nextAction.run();
+			nextAction = () -> {};
+			next();
 		});
 		add(next);
 
@@ -78,6 +79,7 @@ public class InstallerFrame extends JFrame {
 	}
 
 	private void setStep(StepType step) {
+		enableNextButton(true);
 		if (this.step != null) {
 			remove(this.step.getPanel(this));
 		}
@@ -111,8 +113,8 @@ public class InstallerFrame extends JFrame {
 		this.nextAction = r;
 	}
 	
-	public void showNextButton(boolean isShown) {
-		next.setVisible(isShown);
+	public void enableNextButton(boolean enabled) {
+		next.setEnabled(enabled);
 	}
 
 	public void previous() {
@@ -120,12 +122,20 @@ public class InstallerFrame extends JFrame {
 			StepType current = this.step;
 			setStep(this.step.previous());
 			current.clearState();
+			next.setText(Locale.getString(Locale.UI_NEXT));
 		}
 	}
 
 	public void next() {
-		if (this.step.hasNext()) {
+		if(this.step.hasNext()) {
+			if(!this.step.next().hasNext()) {
+				next.setText(Locale.getString(Locale.UI_FINISH));
+			}
+			
 			setStep(this.step.next());
+		}
+		else {
+			System.exit(0);
 		}
 	}
 

@@ -55,6 +55,7 @@ public class Utils {
 	}
 
 	public static void downloadFileMonitored(File destination, URL url, InstallStatusCallback callback) throws IOException {
+		callback.setProgressBarValues(1000, 0);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("User-Agent", USER_AGENT);

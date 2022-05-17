@@ -34,7 +34,7 @@ import io.github.solclient.installer.ui.InstallerFrame;
 public enum StepType {
 	CHOOSE_LAUNCHER(ChooseLauncherStep::new, false),
 	INSTALL_LOCATION(InstallLocationStep::new, true),
-	INSTALL(InstallStep::new, false);
+	INSTALL(InstallStep::new, true);
 	//CUSTOMISE(CustomiseStep::new);
 
 	private JPanel cachedPanel;
@@ -59,7 +59,7 @@ public enum StepType {
 	}
 
 	public boolean hasNext() {
-		return ordinal() < values().length;
+		return ordinal() < values().length - 1;
 	}
 
 	public StepType next() {

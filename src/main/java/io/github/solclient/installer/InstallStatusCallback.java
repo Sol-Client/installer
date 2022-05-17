@@ -28,7 +28,14 @@ public interface InstallStatusCallback {
 	default void setTextStatus(String status, Throwable error) {
 		setTextStatus(status + ":");
 		setTextStatus(error.toString());
-		for(StackTraceElement element : error.getStackTrace()) {
+		setTextStatus(error.getStackTrace());
+		while((error = error.getCause()) != null) {
+			setTextStatus("Caused by " + error);
+			setTextStatus(error.getStackTrace());
+		}
+	}
+	default void setTextStatus(StackTraceElement[] elements) {
+		for(StackTraceElement element : elements) {
 			setTextStatus("        at " + element.toString());
 		}
 	}
