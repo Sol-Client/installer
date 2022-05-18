@@ -2,14 +2,14 @@
  * MIT License
  *
  * Copyright (c) 2022 TheKodeToad, artDev & other contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  *	The above copyright notice and this permission notice shall be included in all
  *	copies or substantial portions of the Software.
  *
@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package io.github.solclient.installer;
+package io.github.solclient.installer.util;
 
+import io.github.solclient.installer.InstallStatusCallback;
 import io.github.solclient.installer.locale.Locale;
-import io.github.solclient.installer.util.Utils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -36,8 +37,8 @@ import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MinecraftJsonPatcher {
-	
+public class VersionCreator {
+
 	MessageDigest shaDigest;
 	File gameJson;
 	File targetJson;
@@ -47,7 +48,7 @@ public class MinecraftJsonPatcher {
 	String targetName;
 	File libsFolder;
 
-	public MinecraftJsonPatcher(File gamedir, String targetVid) throws NoSuchAlgorithmException {
+	public VersionCreator(File gamedir, String targetVid) throws NoSuchAlgorithmException {
 		shaDigest = MessageDigest.getInstance("SHA-1");
 		gameJson = new File(gamedir, "versions/1.8.9/1.8.9.json");
 		gameJar = new File(gamedir, "versions/1.8.9/1.8.9.jar");
@@ -74,15 +75,48 @@ public class MinecraftJsonPatcher {
 			return false;
 		}
 		gameJsonObject.put("id", targetName);
+		update();
 		return true;
 	}
-	
-	public void save(String newMain, String appendArgs) throws IOException {
-		gameJsonObject.put("mainClass", newMain);
-		gameJsonObject.put("minecraftArguments", gameJsonObject.getString("minecraftArguments").concat(appendArgs));
+
+	private void update() {
+		String[] args = gameJsonObject.getString("minecraftArguments").split(" ");
+		gameJsonObject.remove("minecraftArguments");
+		if(!gameJsonObject.has("arguments")) {
+			gameJsonObject.put("arguments", new JSONObject());
+		}
+		JSONObject arguments = gameJsonObject.getJSONObject("arguments");
+		for(String arg : args) {
+			arguments.append("game", arg);
+		}
+		arguments.append("game", new JSONObject(
+				"{\"rules\":[{\"action\":\"allow\",\"features\":{\"is_demo_user\":true}}],\"value\":\"--demo\"}"));
+		arguments.append("game", new JSONObject(
+				"{\"rules\":[{\"action\":\"allow\",\"features\":{\"has_custom_resolution\":true}}],\"value\":[\"--width\",\"${resolution_width}\",\"--height\",\"${resolution_height}\"]}"));
+
+		arguments.append("jvm", "-cp");
+		arguments.append("jvm", "${classpath}");
+		arguments.append("jvm", new JSONObject(
+				"{\"rules\":[{\"action\":\"allow\",\"os\":{\"name\":\"windows\"}}],\"value\":\"-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump\"}"));
+
+		setProperty("java.library.path", "${natives_directory}");
+	}
+
+	public void setProperty(String key, String value) {
+		gameJsonObject.getJSONObject("arguments").append("jvm", "-D" + key + "=" + value);
+	}
+
+	public void addArguments(String... arguments) {
+		for(String argument : arguments) {
+			gameJsonObject.getJSONObject("arguments").accumulate("game", argument);
+		}
+	}
+
+	public void save(String mainClass) throws IOException {
+		gameJsonObject.put("mainClass", mainClass);
 		FileUtils.write(targetJson, gameJsonObject.toString(2), StandardCharsets.UTF_8);
 	}
-	
+
 	public void putLibrary(File origin, String libName) throws IOException {
 		JSONArray libraries = gameJsonObject.getJSONArray("libraries");
 		JSONObject library = new JSONObject();
@@ -90,38 +124,39 @@ public class MinecraftJsonPatcher {
 		libraries.put(library);
 		FileUtils.copyFile(origin, new File(libsFolder, mavenNameToPath(libName)));
 	}
-	
+
 	public void removeLibrary(String mavenName) {
-	   JSONArray libraries = gameJsonObject.getJSONArray("libraries");
-	   for(int i = 0; i < libraries.length(); i++) {
-		   if(libraries.getJSONObject(i).getString("name").equals(mavenName)) {
-			   libraries.remove(i);
-			   return;
-		   }
-	   }
+		JSONArray libraries = gameJsonObject.getJSONArray("libraries");
+		for(int i = 0; i < libraries.length(); i++) {
+			if(libraries.getJSONObject(i).getString("name").equals(mavenName)) {
+				libraries.remove(i);
+				return;
+			}
+		}
 	}
-   public boolean putFullLibrary(String url, String mavenName, InstallStatusCallback cb) throws IOException{
-	   String libLocalPath = mavenNameToPath(mavenName);
-	   File libPath = new File(libsFolder, libLocalPath);
-	   cb.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, mavenName));
-	   if(!libPath.getParentFile().exists() && !libPath.getParentFile().mkdirs()) {
-		   cb.setTextStatus(Locale.getString(Locale.MSG_CANT_CREATE_FOLDER, libPath.getAbsolutePath()));
-           return false;
-	   }
-	   Utils.downloadFileMonitored(libPath, new URL(url), cb);
-	   JSONArray libraries = gameJsonObject.getJSONArray("libraries");
-	   JSONObject artifact = new JSONObject();
-	   artifact.put("url", url);
-	   artifact.put("path", libLocalPath);
-	   artifact.put("size", libPath.length());
-	   artifact.put("sha1", compute(libPath));
-	   JSONObject library = new JSONObject();
-	   library.put("name", mavenName);
-	   library.put("downloads", new JSONObject().put("artifact", artifact));
-	   libraries.put(library);
-       return true;
-   } 
-	
+
+	public boolean putFullLibrary(String url, String mavenName, InstallStatusCallback cb) throws IOException{
+		String libLocalPath = mavenNameToPath(mavenName);
+		File libPath = new File(libsFolder, libLocalPath);
+		cb.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, mavenName));
+		if(!libPath.getParentFile().exists() && !libPath.getParentFile().mkdirs()) {
+			cb.setTextStatus(Locale.getString(Locale.MSG_CANT_CREATE_FOLDER, libPath.getAbsolutePath()));
+			return false;
+		}
+		Utils.downloadFileMonitored(libPath, new URL(url), cb);
+		JSONArray libraries = gameJsonObject.getJSONArray("libraries");
+		JSONObject artifact = new JSONObject();
+		artifact.put("url", url);
+		artifact.put("path", libLocalPath);
+		artifact.put("size", libPath.length());
+		artifact.put("sha1", compute(libPath));
+		JSONObject library = new JSONObject();
+		library.put("name", mavenName);
+		library.put("downloads", new JSONObject().put("artifact", artifact));
+		libraries.put(library);
+		return true;
+	}
+
 	public File getSourceClient() {
 		return gameJar;
 	}
@@ -129,7 +164,11 @@ public class MinecraftJsonPatcher {
 	public File getTargetClient() {
 		return targetJar;
 	}
-	
+
+	public String getTargetName() {
+		return targetName;
+	}
+
 	public void computeTargetClient() throws IOException {
 		JSONObject downloads = gameJsonObject.getJSONObject("downloads");
 		JSONObject newClient = new JSONObject();
@@ -138,16 +177,16 @@ public class MinecraftJsonPatcher {
 		newClient.put("size", targetJar.length());
 		downloads.put("client", newClient);
 	}
-	
+
 	private String mavenNameToPath(String mavenName) {
 		String[] mvnNameSplit = mavenName.split(":");
 		return mvnNameSplit[0].replaceAll("\\.", "/") + "/" + mvnNameSplit[1] + "/" + mvnNameSplit[2] + "/" + mvnNameSplit[1] + "-" + mvnNameSplit[2] + ".jar";
 	}
-	
+
 	private String compute(File input) throws IOException {
 		return byteToHex(shaDigest.digest(FileUtils.readFileToByteArray(input)));
 	}
-	
+
 	private boolean verify(File input, String sha1) throws IOException {
 		if(!input.exists())
 			return false;
@@ -158,12 +197,12 @@ public class MinecraftJsonPatcher {
 	}
 
 	private static String byteToHex(final byte[] hash) {
-        String result;
-        try (Formatter formatter = new Formatter()) {
-            for (byte b : hash) {
-                formatter.format("%02x", b);
-            }   result = formatter.toString();
-        }
+		String result;
+		try (Formatter formatter = new Formatter()) {
+			for (byte b : hash) {
+				formatter.format("%02x", b);
+			}   result = formatter.toString();
+		}
 		return result;
 	}
 
