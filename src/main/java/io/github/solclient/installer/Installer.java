@@ -227,7 +227,8 @@ public class Installer {
             callback.setTextStatus(Locale.getString(Locale.MSG_SAVING));
             jsonPatcher.computeTargetClient();
             jsonPatcher.save("net.minecraft.launchwrapper.Launch", " --tweakClass me.mcblueparrot.client.tweak.Tweaker");
-            callback.onDone(true);
+            callback.setTextStatus(Locale.getString(Locale.MSG_CREATING_PROFILE));
+            callback.onDone(addProfile());
         } catch (Throwable e) {
             callback.setTextStatus(Locale.getString(Locale.MSG_REMAP_FAILED), e);
             callback.onDone(false);
