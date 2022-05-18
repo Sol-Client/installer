@@ -44,10 +44,12 @@ public class Locale {
     public static final int MSG_DONE = 24;
     public static final int MSG_EXTRACTING_OPTIFINE = 25;
     public static final int MSG_INSTALLING_OPTIFINE = 26;
-	public static int UI_FINISH = 27;
-    public static int UI_ENABLE_OPTIFINE = 28;
-    public static int UI_CUSTOMIZE = 29;
-    
+	public static final int UI_FINISH = 27;
+    public static final int UI_ENABLE_OPTIFINE = 28;
+    public static final int UI_CUSTOMIZE = 29;
+	public static final int MSG_CREATING_PROFILE = 30;
+	public static final int MSG_NO_LAUNCHER_PROFILES = 31;
+
     public static void setLocale(java.util.Locale locale) {
         localeMap.clear();
         loadDefault();
@@ -62,9 +64,9 @@ public class Locale {
             return;
         }
         parseLocale(localeUrl);
-        
+
     }
-    
+
     private static void parseLocale(URL is) {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is.openStream()));
@@ -77,7 +79,7 @@ public class Locale {
             return;
         }
     }
-    
+
     private static void loadDefault() {
         localeMap.put(MSG_GETTING_VERSION_INFO, "Getting version info...");
         localeMap.put(MSG_GETTING_VERSION_INFO_FAILED, "Failed to get version info");
@@ -109,8 +111,10 @@ public class Locale {
         localeMap.put(UI_FINISH, "Finish");
         localeMap.put(UI_ENABLE_OPTIFINE, "Add OptiFine");
         localeMap.put(UI_CUSTOMIZE, "Customize");
+        localeMap.put(MSG_CREATING_PROFILE, "Creating profile...");
+        localeMap.put(MSG_NO_LAUNCHER_PROFILES, "Could not find launcher profiles");
     }
-    
+
     public static String getString(int msg) {
         return localeMap.get(msg);
     }

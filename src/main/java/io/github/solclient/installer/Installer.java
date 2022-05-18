@@ -2,14 +2,14 @@
  * MIT License
  *
  * Copyright (c) 2022 TheKodeToad, artDev & other contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  *	The above copyright notice and this permission notice shall be included in all
  *	copies or substantial portions of the Software.
  *
@@ -36,6 +36,7 @@ import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -55,6 +56,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipOutputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Installer {
@@ -65,9 +67,9 @@ public class Installer {
     private int launcherType = -1;
     private InstallStatusCallback callback;
 
-    public void setPath(File f) {
-        this.data = f;
-    }
+	public void setPath(File f) {
+		this.data = f;
+	}
 
     public void setOptifineEnabled(boolean enabled) {
         enableOptifine = enabled;
@@ -166,7 +168,7 @@ public class Installer {
                 Method processMethod = patcher.getMethod("process", File.class, File.class, File.class);
                 processMethod.invoke(processMethod, jsonPatcher.getSourceClient(), optifineJar, optifineJarMod);
                 callback.setTextStatus(Locale.getString(Locale.MSG_INSTALLING_OPTIFINE));
-                try ( ZipFile optifinePatches = new ZipFile(optifineJarMod);  
+                try ( ZipFile optifinePatches = new ZipFile(optifineJarMod);
                       ZipFile srcZip = new ZipFile(jsonPatcher.getSourceClient());
                       ZipOutputStream patchedOut = new ZipOutputStream(new FileOutputStream(patchedJar))) {
                     Enumeration<? extends ZipEntry> srcEntries = srcZip.entries();
@@ -232,43 +234,92 @@ public class Installer {
         }
     }
 
-    private URL getOptifineUrl() throws IOException {
-        URLConnection connection = new URL("https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_M5.jar").openConnection();
-        connection.setRequestProperty("User-Agent", Utils.USER_AGENT);
-        String downloadPage = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
-        String link = downloadPage.substring(downloadPage.indexOf("downloadx"));
-        link = link.substring(0, link.indexOf("'"));
-        link = "https://optifine.net/" + link;
-        return new URL(link);
-    }
+	private URL getOptifineUrl() throws IOException {
+		URLConnection connection = new URL("https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_M5.jar").openConnection();
+		connection.setRequestProperty("User-Agent", Utils.USER_AGENT);
+		String downloadPage = IOUtils.toString(connection.getInputStream(), StandardCharsets.UTF_8);
+		String link = downloadPage.substring(downloadPage.indexOf("downloadx"));
+		link = link.substring(0, link.indexOf("'"));
+		link = "https://optifine.net/" + link;
+		return new URL(link);
+	}
 
-    private boolean addProfile() throws IOException {
-        switch (launcherType) {
-            default:
-            case LAUNCHER_TYPE_MINECRAFT:
-                File launcherProfiles = new File(data, "launcher_profiles.json");
-                if (!launcherProfiles.exists()) {
-                    launcherProfiles = new File(data, "launcher_profiles_microsoft_store.json");
-                    if (!launcherProfiles.exists()) {
-                        return false;
-                    }
-                }
+	private boolean addProfile() throws IOException {
+		switch (launcherType) {
+			default:
+			case LAUNCHER_TYPE_MINECRAFT:
+				File launcherProfiles = new File(data, "launcher_profiles.json");
+				File launcherProfilesMS = new File(data, "launcher_profiles_microsoft_store.json");
+				File launcherUiState = new File(data, "launcher_ui_state.json");
 
-                JSONObject profiles = new JSONObject(
-                        FileUtils.readFileToString(launcherProfiles, StandardCharsets.UTF_8)).getJSONObject("profiles");
+				if(launcherProfilesMS.lastModified() > launcherProfiles.lastModified()) {
+					launcherProfiles = launcherProfilesMS;
+				}
 
-                JSONObject newProfile = new JSONObject();
+				if(!launcherProfiles.exists()) {
+					callback.setTextStatus(Locale.getString(Locale.MSG_NO_LAUNCHER_PROFILES));
+					return false;
+				}
 
-                String now = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toString();
+				JSONObject profilesData = new JSONObject(
+						FileUtils.readFileToString(launcherProfiles, StandardCharsets.UTF_8));
+				JSONObject profiles = profilesData.getJSONObject("profiles");
 
-                newProfile.put("created", now);
-                newProfile.put("lastUsed", now);
+				JSONObject newProfile = new JSONObject();
 
-                profiles.put("sol-client", newProfile);
+				String now = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toString();
 
-                return true;
-            case LAUNCHER_TYPE_POLYMC:
-                return false;
-        }
-    }
+				newProfile.put("created", now);
+				newProfile.put("lastUsed", now);
+				newProfile.put("lastVersionId", "sol-client");
+				newProfile.put("name", "Sol Client");
+				newProfile.put("icon", "data:image/png;base64," + Base64.getEncoder().encodeToString(IOUtils.resourceToByteArray("/logo_128x.png")));
+
+				profiles.put("sol-client", newProfile);
+
+				FileUtils.writeStringToFile(launcherProfiles, profilesData.toString(), StandardCharsets.UTF_8);
+
+				if(launcherUiState.exists()) {
+					dismissInstallation(launcherUiState);
+				}
+
+				return true;
+			case LAUNCHER_TYPE_POLYMC:
+				return false;
+		}
+	}
+
+	private static void dismissInstallation(File launcherUiState) throws IOException {
+		String data = FileUtils.readFileToString(launcherUiState, StandardCharsets.UTF_8);
+
+		if(data.contains("$#")) {
+			data = data.substring(data.indexOf("$#") + 2);
+
+			while(data.startsWith("\n") || data.startsWith("\r")) {
+				data = data.substring(1);
+			}
+		}
+
+		JSONObject obj = new JSONObject(data);
+
+		String uiEvents = "{}";
+
+		if(obj.getJSONObject("data").has("UiEvents")) {
+			uiEvents = obj.getJSONObject("data").getString("UiEvents");
+		}
+
+		JSONObject uiEventsObj = new JSONObject(uiEvents);
+
+		if(!uiEventsObj.has("hidePlayerSafetyDisclaimer")) {
+			uiEventsObj.put("hidePlayerSafetyDisclaimer", new JSONObject());
+		}
+
+		JSONObject dismissedDisclaimers = uiEventsObj.getJSONObject("hidePlayerSafetyDisclaimer");
+		dismissedDisclaimers.put("sol-client_sol-client", true);
+
+		obj.getJSONObject("data").put("UiEvents", uiEventsObj.toString());
+
+		FileUtils.writeStringToFile(launcherUiState, obj.toString(), StandardCharsets.UTF_8);
+	}
+
 }
