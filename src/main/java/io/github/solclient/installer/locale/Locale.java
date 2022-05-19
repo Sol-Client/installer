@@ -49,6 +49,9 @@ public class Locale {
     public static final int UI_CUSTOMIZE = 29;
 	public static final int MSG_CREATING_PROFILE = 30;
 	public static final int MSG_NO_LAUNCHER_PROFILES = 31;
+	public static final int UI_SELECT = 32;
+	public static final int UI_SELECT_GAMEDIR = 33;
+	public static final int UI_ACCESSIBLE_DIRECTORIES = 34;
 
     public static void setLocale(java.util.Locale locale) {
         localeMap.clear();
@@ -113,6 +116,9 @@ public class Locale {
         localeMap.put(UI_CUSTOMIZE, "Customize");
         localeMap.put(MSG_CREATING_PROFILE, "Creating profile...");
         localeMap.put(MSG_NO_LAUNCHER_PROFILES, "Could not find launcher profiles");
+		localeMap.put(UI_SELECT, "Choose");
+		localeMap.put(UI_SELECT_GAMEDIR, "Choose the game directory");
+		localeMap.put(UI_ACCESSIBLE_DIRECTORIES, "Accessible directories");
     }
 
     public static String getString(int msg) {
