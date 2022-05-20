@@ -52,7 +52,11 @@ public class Locale {
 	public static final int UI_SELECT = 32;
 	public static final int UI_SELECT_GAMEDIR = 33;
 	public static final int UI_ACCESSIBLE_DIRECTORIES = 34;
-
+	public static final int MSG_INVALID_MANIFEST = 35;
+	public static final int MSG_NO_MINECRAFT = 36;
+	public static final int MSG_SEARCHING_MINECRAFT = 37;
+	public static final int UI_ERROR = 38;
+	public static final int UI_NO_SHA1 = 39;
     public static void setLocale(java.util.Locale locale) {
         localeMap.clear();
         loadDefault();
@@ -119,6 +123,11 @@ public class Locale {
 		localeMap.put(UI_SELECT, "Choose");
 		localeMap.put(UI_SELECT_GAMEDIR, "Choose the game directory");
 		localeMap.put(UI_ACCESSIBLE_DIRECTORIES, "Accessible directories");
+		localeMap.put(MSG_INVALID_MANIFEST, "The version manifest is not valid!");
+		localeMap.put(MSG_NO_MINECRAFT, "Minecraft %s not found in manifest");
+		localeMap.put(MSG_SEARCHING_MINECRAFT, "Searching for Minecraft %s...");
+		localeMap.put(UI_ERROR, "Error");
+		localeMap.put(UI_NO_SHA1, "SHA1 is not supported by this Java VM");
     }
 
     public static String getString(int msg) {

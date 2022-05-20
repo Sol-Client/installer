@@ -77,5 +77,18 @@ public class Utils {
 		if(fileLength == -1)
 			callback.setProgressBarIndeterminate(false);
 	}
-
+	public static String downloadFileToString(URL url) throws IOException {
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setRequestMethod("GET");
+		conn.setRequestProperty("User-Agent", USER_AGENT);
+		conn.connect();
+		InputStream stream = conn.getInputStream();
+		StringBuilder output = new StringBuilder();
+		int cnt;
+		byte[] buf = new byte[1024];
+		while ((cnt = stream.read(buf)) != -1) {
+			output.append(new String(buf,0,cnt));
+		}
+		return output.toString();
+	}
 }

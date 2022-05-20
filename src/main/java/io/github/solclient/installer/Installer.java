@@ -45,6 +45,8 @@ import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_MINECRAFT;
 import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_POLYMC;
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.util.ClientRelease;
+import io.github.solclient.installer.util.MCVersionCreator;
+import io.github.solclient.installer.util.PolyVersionCreator;
 import io.github.solclient.installer.util.Utils;
 import io.github.solclient.installer.util.VersionCreator;
 
@@ -94,9 +96,26 @@ public class Installer {
             callback.onDone(false);
             return;
         }
+		File cacheFolder = new File(System.getProperty("java.io.tmpdir"), "sol-installer-cache");
+        if (!cacheFolder.exists()) {
+            if (!cacheFolder.mkdirs()) {
+                callback.setTextStatus(Locale.getString(Locale.MSG_CACHE_FAILED));
+                callback.onDone(false);
+                return;
+            }
+        }
         VersionCreator creator;
         try {
-            creator = new VersionCreator(data, "Sol Client " + latest.getId());
+			switch(launcherType) {
+				case Launchers.LAUNCHER_TYPE_MINECRAFT:
+				default:
+					creator = new MCVersionCreator(data, cacheFolder, "Sol Client " + latest.getId());
+					break;
+				case Launchers.LAUNCHER_TYPE_POLYMC:
+					creator = new PolyVersionCreator(data, cacheFolder, "Sol Client " + latest.getId());
+					break;
+			}
+            
             if (!creator.load(callback)) {
                 callback.onDone(false);
                 return;
@@ -110,14 +129,7 @@ public class Installer {
             return;
         }
         callback.setTextStatus(Locale.getString(Locale.MSG_INSTALLING_VERSION, latest.getId()));
-        File cacheFolder = new File(System.getProperty("java.io.tmpdir"), "sol-installer-cache");
-        if (!cacheFolder.exists()) {
-            if (!cacheFolder.mkdirs()) {
-                callback.setTextStatus(Locale.getString(Locale.MSG_CACHE_FAILED));
-                callback.onDone(false);
-                return;
-            }
-        }
+        
         cacheFolder.deleteOnExit();
         String gameJarUrl = latest.getGameJar();
         File clientJar = new File(cacheFolder, "sol-client.jar");
@@ -228,10 +240,10 @@ public class Installer {
             });
             callback.setTextStatus(Locale.getString(Locale.MSG_SAVING));
             creator.computeTargetClient();
-            creator.setProperty("me.mcblueparrot.client.version", latest.getId());
-            creator.setProperty("user.language", "en");
-            creator.setProperty("user.country", "US");
-            creator.addArguments("--tweakClass", "me.mcblueparrot.client.tweak.Tweaker");
+            creator.addProperty("me.mcblueparrot.client.version", latest.getId());
+            creator.addProperty("user.language", "en");
+            creator.addProperty("user.country", "US");
+			creator.setTweakerClass("me.mcblueparrot.client.tweak.Tweaker");
             creator.save("net.minecraft.launchwrapper.Launch");
             callback.setTextStatus(Locale.getString(Locale.MSG_CREATING_PROFILE));
             callback.onDone(addProfile(creator.getTargetName()));
@@ -292,7 +304,7 @@ public class Installer {
 
 				return true;
 			case LAUNCHER_TYPE_POLYMC:
-				return false;
+				return true; //everything is done in PolyVersionCreator
 		}
 	}
 
