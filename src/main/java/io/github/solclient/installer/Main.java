@@ -27,8 +27,6 @@ package io.github.solclient.installer;
 import javax.swing.JFrame;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 
 import io.github.solclient.installer.ui.InstallerFrame;
 import io.github.solclient.installer.locale.Locale;

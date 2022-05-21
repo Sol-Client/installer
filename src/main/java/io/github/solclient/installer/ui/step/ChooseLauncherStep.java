@@ -24,14 +24,11 @@
 
 package io.github.solclient.installer.ui.step;
 
-import java.awt.Color;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import io.github.solclient.installer.Launchers;
-import io.github.solclient.installer.Installer;
 import io.github.solclient.installer.locale.Locale;
 
 import io.github.solclient.installer.ui.InstallerFrame;

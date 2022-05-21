@@ -21,12 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.solclient.installer.ui.step;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import io.github.solclient.installer.ui.InstallerFrame;

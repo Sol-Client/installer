@@ -35,7 +35,6 @@ import java.nio.charset.StandardCharsets;
 import io.github.solclient.installer.InstallStatusCallback;
 
 import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Utils {

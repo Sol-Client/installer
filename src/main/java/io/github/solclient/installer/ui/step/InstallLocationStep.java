@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.solclient.installer.ui.step;
 
-import com.formdev.flatlaf.icons.FlatFileChooserListViewIcon;
 import com.formdev.flatlaf.icons.FlatFileViewDirectoryIcon;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -40,9 +40,7 @@ import io.github.solclient.installer.locale.Locale;
 
 import io.github.solclient.installer.ui.InstallerFrame;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
-import javax.swing.UIManager;
 import javax.swing.filechooser.FileFilter;
 
 public class InstallLocationStep extends JPanel {

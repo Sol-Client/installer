@@ -21,24 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.solclient.installer.util;
 
 import io.github.solclient.installer.InstallStatusCallback;
-import io.github.solclient.installer.Launchers;
-import io.github.solclient.installer.locale.Locale;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Formatter;
-import java.util.Properties;
-import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public interface VersionCreator {
 	boolean load(InstallStatusCallback cb) throws IOException;

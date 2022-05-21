@@ -21,14 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package io.github.solclient.installer.ui.step;
 
 import java.awt.EventQueue;
 import io.github.solclient.installer.InstallStatusCallback;
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.ui.InstallerFrame;
-import java.awt.Color;
-import javax.swing.SwingUtilities;
 
 public class InstallStep extends javax.swing.JPanel implements InstallStatusCallback {
 
