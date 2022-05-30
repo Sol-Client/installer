@@ -57,7 +57,7 @@ public class Installer {
 
     private static final String MAPPINGS_URL = "https://maven.minecraftforge.net/de/oceanlabs/mcp/mcp/1.8.9/mcp-1.8.9-srg.zip";
     private File data;
-    private boolean enableOptifine = false;
+    private boolean enableOptifine = true;
     private int launcherType = -1;
     private InstallStatusCallback callback;
 
