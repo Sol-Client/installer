@@ -139,8 +139,6 @@ public class Installer {
             Utils.downloadFileMonitored(mappings, new URL(MAPPINGS_URL), callback);
             if (!(creator.putFullLibrary("https://repo.maven.apache.org/maven2/org/slick2d/slick2d-core/1.0.2/slick2d-core-1.0.2.jar",
                     "org.slick2d:slick2d-core:1.0.2", callback)
-                    && creator.putFullLibrary("https://repo.codemc.io/repository/maven-public/com/logisticscraft/occlusionculling/0.0.5-SNAPSHOT/occlusionculling-0.0.5-20210620.172315-1.jar",
-                            "com.logisticscraft:occlusionculling:0.0.5-SNAPSHOT", callback)
                     && creator.putFullLibrary("https://repo.hypixel.net/repository/Hypixel/net/hypixel/hypixel-api-core/4.0/hypixel-api-core-4.0.jar",
                             "net.hypixel:hypixel-api-core:4.0", callback)
                     && creator.putFullLibrary("https://repo.spongepowered.org/repository/maven-public/org/spongepowered/mixin/0.7.11-SNAPSHOT/mixin-0.7.11-20180703.121122-1.jar",
