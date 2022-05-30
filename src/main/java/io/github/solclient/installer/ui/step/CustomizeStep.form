@@ -39,6 +39,7 @@
   <SubComponents>
     <Component class="javax.swing.JCheckBox" name="optiFineCheckbox">
       <Properties>
+        <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="Locale.getString(Locale.UI_ENABLE_OPTIFINE)" type="code"/>
         </Property>

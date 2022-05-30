@@ -49,6 +49,7 @@ public class CustomizeStep extends javax.swing.JPanel {
         optiFineCheckbox = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
 
+        optiFineCheckbox.setSelected(true);
         optiFineCheckbox.setText(Locale.getString(Locale.UI_ENABLE_OPTIFINE));
         optiFineCheckbox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {

@@ -133,8 +133,10 @@ public class Installer {
             callback.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_CLIENT));
             Utils.downloadFileMonitored(clientJar, new URL(gameJarUrl), callback);
             creator.putLibrary(clientJar, "io.github.solclient:client:" + latest.getId());
-            callback.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, "OptiFine"));
-            Utils.downloadFileMonitored(optifineJar, getOptifineUrl(), callback);
+			if(enableOptifine) {
+				callback.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, "OptiFine"));
+				Utils.downloadFileMonitored(optifineJar, getOptifineUrl(), callback);
+			}
             callback.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_MAPPINGS));
             Utils.downloadFileMonitored(mappings, new URL(MAPPINGS_URL), callback);
             if (!(creator.putFullLibrary("https://repo.maven.apache.org/maven2/org/slick2d/slick2d-core/1.0.2/slick2d-core-1.0.2.jar",
