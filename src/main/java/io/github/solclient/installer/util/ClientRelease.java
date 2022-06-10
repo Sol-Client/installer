@@ -68,7 +68,7 @@ public class ClientRelease {
 	}
 
 	public static ClientRelease latest() throws IOException {
-		return parse(Utils.json(new URL(System.getProperty("me.mcblueparrot.client.install.api", "https://api.github.com/repos/TheKodeToad/Sol-Client/releases/latest"))));
+		return parse(Utils.json(new URL(System.getProperty("io.github.solclient.client.install.api", "https://api.github.com/repos/TheKodeToad/Sol-Client/releases/latest"))));
 	}
 
 }

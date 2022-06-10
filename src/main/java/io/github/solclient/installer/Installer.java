@@ -230,10 +230,10 @@ public class Installer {
             });
             callback.setTextStatus(Locale.getString(Locale.MSG_SAVING));
             creator.computeTargetClient();
-            creator.addProperty("me.mcblueparrot.client.version", latest.getId());
+            creator.addProperty("io.github.solclient.client.version", latest.getId());
             creator.addProperty("user.language", "en");
             creator.addProperty("user.country", "US");
-			creator.setTweakerClass("me.mcblueparrot.client.tweak.Tweaker");
+			creator.setTweakerClass("io.github.solclient.client.tweak.Tweaker");
             creator.save("net.minecraft.launchwrapper.Launch");
             callback.setTextStatus(Locale.getString(Locale.MSG_CREATING_PROFILE));
             callback.onDone(addProfile(creator.getTargetName()));
