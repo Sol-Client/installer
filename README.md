@@ -1,2 +1,2 @@
 # Installer
-Installer (gasp)
+An installer for other launchers.
