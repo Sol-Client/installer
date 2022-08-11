@@ -2,14 +2,14 @@
  * MIT License
  *
  * Copyright (c) 2022 TheKodeToad, artDev & other contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  *	The above copyright notice and this permission notice shall be included in all
  *	copies or substantial portions of the Software.
  *
@@ -24,7 +24,6 @@
 
 package io.github.solclient.installer.util;
 
-import io.github.solclient.installer.InstallStatusCallback;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -32,9 +31,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import io.github.solclient.installer.InstallStatusCallback;
 
 public class PolyVersionCreator extends MCVersionCreator {
 	File instanceHome;
@@ -57,7 +59,6 @@ public class PolyVersionCreator extends MCVersionCreator {
 		super.targetName = targetName;
 		super.gameJar = null;
 		super.gameJson = null;
-		this.version = version;
 		String instancesFldr = "instances";
 		Properties polyprops = new Properties();
 		try {
@@ -70,7 +71,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		instanceHome = new File(gamedir, instancesFldr + "/" + targetName);
 		instanceHome.mkdirs();
 		targetJson = new File(instanceHome, "patches/net.minecraft.json");
@@ -78,7 +79,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 		libsFolder = new File(instanceHome, "libraries");
 		libsFolder.mkdirs();
 		targetJar = new File(libsFolder, "transformed.jar");
-		
+
 	}
 	@Override
 	public boolean load(InstallStatusCallback cb) throws IOException{
@@ -94,12 +95,12 @@ public class PolyVersionCreator extends MCVersionCreator {
 		gameJsonObject.put("name", targetName);
 		return true;
 	}
-	
+
 	@Override
 	void update() {
 		//Do nothing: the original changes formats for MC arguments
 	}
-	
+
 	@Override
 	public void save(String main) throws IOException{
 		super.save(main);
@@ -109,7 +110,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 		FileOutputStream fInstanceProperties = new FileOutputStream(new File(instanceHome, "instance.cfg"));
 		instanceProperties.store(fInstanceProperties, "");
 		fInstanceProperties.close();
-		FileOutputStream fMMCPack = new FileOutputStream(new File(instanceHome, "mmc-pack.json")); 
+		FileOutputStream fMMCPack = new FileOutputStream(new File(instanceHome, "mmc-pack.json"));
 		fMMCPack.write(MMC_PACK.getBytes(StandardCharsets.UTF_8));
 		fMMCPack.close();
 		File solIcon = new File(polyRoot,"icons/solclient.png");
@@ -117,7 +118,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 		InputStream iconRes = PolyVersionCreator.class.getResourceAsStream("/logo_128x.png");
 		FileUtils.copyInputStreamToFile(iconRes, solIcon);
 	}
-	
+
 	@Override
 	public void addGameArguments(String... arguments) {
 		String args = gameJsonObject.getString("minecraftArguments");
@@ -126,7 +127,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 		}
 		gameJsonObject.put("minecraftArguments", args);
 	}
-	
+
 	@Override
 	public void addProperty(String property, String value) {
 		String args;
@@ -139,7 +140,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 			instanceProperties.put("JvmArgs", args);
 		}
 	}
-	
+
 	@Override
 	public void computeTargetClient() throws IOException{
 		JSONObject mainJar = new JSONObject();
@@ -148,7 +149,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 		mainJar.put("MMC-filename", "transformed.jar");
 		gameJsonObject.put("mainJar", mainJar);
 	}
-	
+
 	@Override
 	public void putLibrary(File origin, String libName) throws IOException{
 		JSONArray libraries = gameJsonObject.getJSONArray("libraries");
@@ -161,7 +162,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 		libraries.put(library);
 		FileUtils.copyFile(origin, libPath);
 	}
-	
+
 	@Override
 	public void setTweakerClass(String tweaker) {
 		gameJsonObject.put("+tweakers", new JSONArray().put(tweaker));

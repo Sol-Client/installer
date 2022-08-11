@@ -2,14 +2,14 @@
  * MIT License
  *
  * Copyright (c) 2022 TheKodeToad, artDev & other contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  *	The above copyright notice and this permission notice shall be included in all
  *	copies or substantial portions of the Software.
  *
@@ -27,12 +27,12 @@ package io.github.solclient.installer.ui.step;
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.ui.InstallerFrame;
 
-public class CustomizeStep extends javax.swing.JPanel {
+public class CustomiseStep extends javax.swing.JPanel {
 	InstallerFrame frame;
 	/**
-	 * Creates new form CustomizeStep
+	 * Creates new form CustomiseStep
 	 */
-	public CustomizeStep(InstallerFrame frame) {
+	public CustomiseStep(InstallerFrame frame) {
 		this.frame = frame;
 		initComponents();
 	}
@@ -52,6 +52,7 @@ public class CustomizeStep extends javax.swing.JPanel {
 		optiFineCheckbox.setSelected(true);
 		optiFineCheckbox.setText(Locale.getString(Locale.UI_ENABLE_OPTIFINE));
 		optiFineCheckbox.addItemListener(new java.awt.event.ItemListener() {
+			@Override
 			public void itemStateChanged(java.awt.event.ItemEvent evt) {
 				optiFineCheckboxItemStateChanged(evt);
 			}
@@ -59,7 +60,7 @@ public class CustomizeStep extends javax.swing.JPanel {
 
 		jLabel1.setFont(jLabel1.getFont().deriveFont((float)20));
 		jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-		jLabel1.setText(Locale.getString(Locale.UI_CUSTOMIZE));
+		jLabel1.setText(Locale.getString(Locale.UI_CUSTOMISE));
 
 		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
 		this.setLayout(layout);
