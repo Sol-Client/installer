@@ -71,7 +71,7 @@ public class MCVersionCreator implements VersionCreator{
 			gameJar = new File(tempDir, "1.8.9.jar");
 		}
 		JSONObject downloads = gameJsonObject.getJSONObject("downloads");
-		if(downloads != null) {
+		if(downloads != null && downloads.has("client")) {
 			JSONObject client = (JSONObject) downloads.get("client");
 			if(!VersionCreatorUtils.verify(gameJar, client.getString("sha1"))) {
 				cb.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, gameJar.getName()));

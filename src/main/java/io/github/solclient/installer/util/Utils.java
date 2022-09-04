@@ -60,6 +60,7 @@ public class Utils {
 		conn.setRequestProperty("User-Agent", USER_AGENT);
 		conn.connect();
 		InputStream stream = conn.getInputStream();
+		destination.getParentFile().mkdirs();
 		FileOutputStream output = new FileOutputStream(destination);
 		long fileLength = conn.getContentLength();
 		float filePercentDivider = 10000f / fileLength;
