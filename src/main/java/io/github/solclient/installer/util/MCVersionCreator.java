@@ -52,6 +52,7 @@ public class MCVersionCreator implements VersionCreator{
 		targetName = targetVid;
 		this.tempDir = tempDir;
 		gameJson = new File(gamedir, "versions/1.8.9/1.8.9.json");
+		gameJson.getParentFile().mkdirs(); // In case of user hasn't downloaded vanilla version yet.
 		gameJar = new File(gamedir, "versions/1.8.9/1.8.9.jar");
 		targetJson = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".json");
 		targetJar = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".jar");
