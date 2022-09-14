@@ -125,19 +125,20 @@ public class MCVersionCreator implements VersionCreator{
 
 		game.add(JsonObject.of(
 			"rules", JsonArray.of(
-				JsonObject.of("action", "allow", "features", JsonObject.of("is_demo_user", true), "value", "--demo")
-			)
+				JsonObject.of("action", "allow", "features", JsonObject.of("is_demo_user", true))
+			),
+			"value", "--demo"
 		));
 
 		game.add(JsonObject.of(
 			"rules", JsonArray.of(
-				JsonObject.of("action", "allow", "features", JsonObject.of("has_custom_resolution", true), "value", JsonArray.of(
-					"--width",
-					"${resolution_width}",
-					"--height",
-					"${resolution_height}"
-				)
-			)
+				JsonObject.of("action", "allow", "features", JsonObject.of("has_custom_resolution", true))
+			),
+			"value", JsonArray.of(
+				"--width",
+				"${resolution_width}",
+				"--height",
+				"${resolution_height}"
 			)
 		));
 
@@ -155,8 +156,6 @@ public class MCVersionCreator implements VersionCreator{
 	public void addProperty(String key, String value) {
 		gameJsonObject.get("arguments").asObject().get("jvm").asArray().add("-D" + key + "=" + value);
 	}
-
-
 
 	@Override
 	public void addGameArguments(String... arguments) {

@@ -53,6 +53,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 "    \"formatVersion\": 1\n" +
 "}";
 	Properties instanceProperties = new Properties();
+
 	public PolyVersionCreator(File gamedir, File tmpDir, String targetName) {
 		this.polyRoot = gamedir;
 		super.tempDir = tmpDir;
