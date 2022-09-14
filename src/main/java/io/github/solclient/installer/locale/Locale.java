@@ -108,7 +108,7 @@ public class Locale {
 		LOCALE_ARRAY[MSG_GETTING_VERSION_INFO] = "Getting version info...";
 		LOCALE_ARRAY[MSG_GETTING_VERSION_INFO_FAILED] = "Failed to get version info";
 		LOCALE_ARRAY[MSG_INSTALLING_VERSION] = "Using version %s";
-		LOCALE_ARRAY[MSG_CACHE_FAILED] = "Failed to create a cache folder";
+		LOCALE_ARRAY[MSG_CACHE_FAILED] = "Failed to create cache folder";
 		LOCALE_ARRAY[MSG_DOWNLOADING_CLIENT] = "Downloading client...";
 		LOCALE_ARRAY[MSG_DOWNLOADING_MAPPINGS] = "Downloading mappings...";
 		LOCALE_ARRAY[MSG_DOWNLOADING_GENERIC] = "Downloading %s...";
@@ -125,7 +125,7 @@ public class Locale {
 		LOCALE_ARRAY[UI_TITLE] = "Sol Client Installer";
 		LOCALE_ARRAY[UI_BACK] = "< Back";
 		LOCALE_ARRAY[UI_NEXT] = "Next >";
-		LOCALE_ARRAY[UI_SELECT_LAUNCHER] = "Select your launcher type";
+		LOCALE_ARRAY[UI_SELECT_LAUNCHER] = "Select your launcher";
 		LOCALE_ARRAY[UI_INSTALL_LOCATION] = "Install location";
 		LOCALE_ARRAY[UI_OH_DEAR] = "Oh Dear!";
 		LOCALE_ARRAY[UI_NO_GAMEDIR] = "Could not access the specified game folder";
@@ -133,7 +133,7 @@ public class Locale {
 		LOCALE_ARRAY[MSG_EXTRACTING_OPTIFINE] = "Extracting OptiFine...";
 		LOCALE_ARRAY[MSG_INSTALLING_OPTIFINE] = "Installing OptiFine...";
 		LOCALE_ARRAY[UI_FINISH] = "Finish";
-		LOCALE_ARRAY[UI_ENABLE_OPTIFINE] = "Add OptiFine";
+		LOCALE_ARRAY[UI_ENABLE_OPTIFINE] = "Install OptiFine";
 		LOCALE_ARRAY[UI_CUSTOMISE] = "Customize";
 		LOCALE_ARRAY[MSG_CREATING_PROFILE] = "Creating profile...";
 		LOCALE_ARRAY[MSG_NO_LAUNCHER_PROFILES] = "Could not find launcher profiles";

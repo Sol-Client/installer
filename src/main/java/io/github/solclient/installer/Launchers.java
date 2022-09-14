@@ -36,8 +36,8 @@ public class Launchers {
 	 */
 	public static final int LAUNCHER_TYPE_POLYMC = 0;
 	public static final int LAUNCHER_TYPE_MINECRAFT = 1;
-	private static final List<File> minecraftLauncherPaths;
-	private static final List<File> polymcPaths;
+	private static final List<File> MINECRAFT_LAUNCHER_PATHS;
+	private static final List<File> POLYMC_PATHS;
 	static {
 		List<File> polyPaths;
 		switch (OperatingSystem.current()) {
@@ -49,16 +49,16 @@ public class Launchers {
 					case WINDOWS:
 						polyPaths = Arrays.asList(new File(OperatingSystem.OSX.getDataDir(), "PolyMC"));
 		}
-		polymcPaths = polyPaths;
-		minecraftLauncherPaths = Arrays.asList(new File(OperatingSystem.current().getDataDir(),
+		POLYMC_PATHS = polyPaths;
+		MINECRAFT_LAUNCHER_PATHS = Arrays.asList(new File(OperatingSystem.current().getDataDir(),
 						OperatingSystem.current() == OperatingSystem.OSX ? "minecraft" : ".minecraft"));
 	}
 	public static List<File> getLocationsForLauncher(int type) {
 		switch(type) {
 			case LAUNCHER_TYPE_MINECRAFT:
-				return minecraftLauncherPaths;
+				return MINECRAFT_LAUNCHER_PATHS;
 			case LAUNCHER_TYPE_POLYMC:
-				return polymcPaths;
+				return POLYMC_PATHS;
 			default:
 				throw new IllegalArgumentException();
 		}

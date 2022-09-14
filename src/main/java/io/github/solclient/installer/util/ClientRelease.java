@@ -2,14 +2,14 @@
  * MIT License
  *
  * Copyright (c) 2022 TheKodeToad, artDev & other contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  *	The above copyright notice and this permission notice shall be included in all
  *	copies or substantial portions of the Software.
  *
@@ -26,25 +26,23 @@ package io.github.solclient.installer.util;
 
 import java.io.IOException;
 import java.net.URL;
-import org.json.JSONObject;
+
+import io.toadlabs.jfgjds.data.JsonObject;
+import io.toadlabs.jfgjds.data.JsonValue;
 
 public class ClientRelease {
 
 	private String id;
 	private String gameJar;
 
-	public static ClientRelease parse(JSONObject obj) {
+	public static ClientRelease parse(JsonObject obj) {
 		ClientRelease rel = new ClientRelease();
-		rel.id = obj.getString("name");
-		JSONObject gameAsset = null;
+		rel.id = obj.get("name").getStringValue();
+		JsonObject gameAsset = null;
 
-		for(Object assetObj : obj.getJSONArray("assets")) {
-			if(!(assetObj instanceof JSONObject)) {
-				continue;
-			}
-
-			JSONObject asset = (JSONObject) assetObj;
-			if(asset.getString("name").equals("game.jar")) {
+		for(JsonValue assetObj : obj.get("assets").asArray()) {
+			JsonObject asset = assetObj.asObject();
+			if(asset.get("name").getStringValue().equals("game.jar")) {
 				gameAsset = asset;
 				break;
 			}
@@ -54,7 +52,7 @@ public class ClientRelease {
 			throw new IllegalArgumentException("No game.jar found for version " + rel.id);
 		}
 
-		rel.gameJar = gameAsset.getString("browser_download_url");
+		rel.gameJar = gameAsset.get("browser_download_url").getStringValue();
 
 		return rel;
 	}

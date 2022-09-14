@@ -33,10 +33,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import io.github.solclient.installer.InstallStatusCallback;
+import io.toadlabs.jfgjds.data.JsonArray;
+import io.toadlabs.jfgjds.data.JsonObject;
 
 public class PolyVersionCreator extends MCVersionCreator {
 	File instanceHome;
@@ -86,9 +86,9 @@ public class PolyVersionCreator extends MCVersionCreator {
 		if(!super.load(cb)) {
 			return false;
 		}
-		if(gameJsonObject.has("javaVersion")) {
-			int javaMajor = gameJsonObject.getJSONObject("javaVersion").getInt("majorVersion");
-			gameJsonObject.append("compatibleJavaMajors", javaMajor);
+		if(gameJsonObject.contains("javaVersion")) {
+			int javaMajor = gameJsonObject.get("javaVersion").asObject().get("majorVersion").getIntNumberValue();
+			gameJsonObject.put("compatibleJavaMajors", javaMajor);
 			gameJsonObject.remove("javaVersion");
 		}
 		gameJsonObject.remove("downloads");
@@ -121,9 +121,9 @@ public class PolyVersionCreator extends MCVersionCreator {
 
 	@Override
 	public void addGameArguments(String... arguments) {
-		String args = gameJsonObject.getString("minecraftArguments");
+		String args = gameJsonObject.get("minecraftArguments").getStringValue();
 		for(String arg : arguments) {
-			args += " "+arg;
+			args += ' ' + arg;
 		}
 		gameJsonObject.put("minecraftArguments", args);
 	}
@@ -143,7 +143,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 
 	@Override
 	public void computeTargetClient() throws IOException{
-		JSONObject mainJar = new JSONObject();
+		JsonObject mainJar = new JsonObject();
 		mainJar.put("name", "io.github.solclient:transformed:1.8.9");
 		mainJar.put("MMC-hint", "local");
 		mainJar.put("MMC-filename", "transformed.jar");
@@ -152,19 +152,20 @@ public class PolyVersionCreator extends MCVersionCreator {
 
 	@Override
 	public void putLibrary(File origin, String libName) throws IOException{
-		JSONArray libraries = gameJsonObject.getJSONArray("libraries");
+		JsonArray libraries = gameJsonObject.get("libraries").asArray();
 		String mavenPath = VersionCreatorUtils.mavenNameToPath(libName);
 		mavenPath = mavenPath.substring(mavenPath.lastIndexOf("/"));
 		File libPath = new File(libsFolder, mavenPath);
-		JSONObject library = new JSONObject();
+		JsonObject library = new JsonObject();
 		library.put("name", libName);
 		library.put("MMC-hint", "local");
-		libraries.put(library);
+		libraries.add(library);
 		FileUtils.copyFile(origin, libPath);
 	}
 
 	@Override
 	public void setTweakerClass(String tweaker) {
-		gameJsonObject.put("+tweakers", new JSONArray().put(tweaker));
+		gameJsonObject.put("+tweakers", JsonArray.of(tweaker));
 	}
+
 }

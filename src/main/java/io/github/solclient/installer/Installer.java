@@ -24,34 +24,37 @@
 
 package io.github.solclient.installer;
 
+import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_MINECRAFT;
+import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_POLYMC;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Base64;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_MINECRAFT;
-import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_POLYMC;
+import java.util.zip.ZipOutputStream;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.util.ClientRelease;
 import io.github.solclient.installer.util.MCVersionCreator;
 import io.github.solclient.installer.util.PolyVersionCreator;
 import io.github.solclient.installer.util.Utils;
 import io.github.solclient.installer.util.VersionCreator;
-
-import java.lang.reflect.Method;
-import java.net.URLConnection;
-import java.util.Enumeration;
-import java.util.zip.ZipOutputStream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
+import io.toadlabs.jfgjds.JsonDeserializer;
+import io.toadlabs.jfgjds.data.JsonObject;
 
 public class Installer {
 
@@ -105,7 +108,7 @@ public class Installer {
 					creator = new PolyVersionCreator(data, cacheFolder, "Sol Client " + latest.getId());
 					break;
 			}
-			
+
 			if (!creator.load(callback)) {
 				callback.onDone(false);
 				return;
@@ -119,7 +122,7 @@ public class Installer {
 			return;
 		}
 		callback.setTextStatus(Locale.getString(Locale.MSG_INSTALLING_VERSION, latest.getId()));
-		
+
 		cacheFolder.deleteOnExit();
 		String gameJarUrl = latest.getGameJar();
 		File clientJar = new File(cacheFolder, "sol-client.jar");
@@ -270,11 +273,11 @@ public class Installer {
 					return false;
 				}
 
-				JSONObject profilesData = new JSONObject(
-						FileUtils.readFileToString(launcherProfiles, StandardCharsets.UTF_8));
-				JSONObject profiles = profilesData.getJSONObject("profiles");
+				JsonObject profilesData = JsonDeserializer.fromString(
+						FileUtils.readFileToString(launcherProfiles, StandardCharsets.UTF_8)).asObject();
+				JsonObject profiles = profilesData.get("profiles").asObject();
 
-				JSONObject newProfile = new JSONObject();
+				JsonObject newProfile = new JsonObject();
 
 				String now = OffsetDateTime.now().withOffsetSameInstant(ZoneOffset.UTC).toString();
 
@@ -309,24 +312,24 @@ public class Installer {
 			}
 		}
 
-		JSONObject obj = new JSONObject(data);
+		JsonObject obj = JsonDeserializer.fromString(data).asObject();
 
 		String uiEvents = "{}";
 
-		if(obj.getJSONObject("data").has("UiEvents")) {
-			uiEvents = obj.getJSONObject("data").getString("UiEvents");
+		if(obj.get("data").asObject().contains("UiEvents")) {
+			uiEvents = obj.get("data").asObject().get("UiEvents").getStringValue();
 		}
 
-		JSONObject uiEventsObj = new JSONObject(uiEvents);
+		JsonObject uiEventsObj = JsonDeserializer.fromString(uiEvents).asObject();
 
-		if(!uiEventsObj.has("hidePlayerSafetyDisclaimer")) {
-			uiEventsObj.put("hidePlayerSafetyDisclaimer", new JSONObject());
+		if(!uiEventsObj.contains("hidePlayerSafetyDisclaimer")) {
+			uiEventsObj.put("hidePlayerSafetyDisclaimer", new JsonObject());
 		}
 
-		JSONObject dismissedDisclaimers = uiEventsObj.getJSONObject("hidePlayerSafetyDisclaimer");
+		JsonObject dismissedDisclaimers = uiEventsObj.get("hidePlayerSafetyDisclaimer").asObject();
 		dismissedDisclaimers.put(versionId + "_sol-client", true);
 
-		obj.getJSONObject("data").put("UiEvents", uiEventsObj.toString());
+		obj.get("data").asObject().put("UiEvents", uiEventsObj.toString());
 
 		FileUtils.writeStringToFile(launcherUiState, obj.toString(), StandardCharsets.UTF_8);
 	}
