@@ -39,26 +39,26 @@ import io.toadlabs.jfgjds.JsonSerializer;
 import io.toadlabs.jfgjds.data.JsonArray;
 import io.toadlabs.jfgjds.data.JsonObject;
 
-public class PolyVersionCreator extends MCVersionCreator {
+public class MultiMCVersionCreator extends MCVersionCreator {
 	File instanceHome;
-	File polyRoot;
+	File multimcRoot;
 	String version;
 	Properties instanceProperties = new Properties();
 
-	public PolyVersionCreator(File gamedir, File tmpDir, String targetName) {
-		this.polyRoot = gamedir;
+	public MultiMCVersionCreator(File gamedir, File tmpDir, String targetName) {
+		this.multimcRoot = gamedir;
 		super.tempDir = tmpDir;
 		super.targetName = targetName;
 		super.gameJar = null;
 		super.gameJson = null;
 		String instancesFldr = "instances";
-		Properties polyprops = new Properties();
+		Properties multimcProps = new Properties();
 		try {
-			FileInputStream props = new FileInputStream(new File(gamedir, "polymc.cfg"));
-			polyprops.load(props);
+			FileInputStream props = new FileInputStream(new File(gamedir, "multimc.cfg"));
+			multimcProps.load(props);
 			props.close();
-			if (polyprops.containsKey("InstanceDir")) {
-				instancesFldr = polyprops.getProperty("InstanceDir");
+			if (multimcProps.containsKey("InstanceDir")) {
+				instancesFldr = multimcProps.getProperty("InstanceDir");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -99,6 +99,7 @@ public class PolyVersionCreator extends MCVersionCreator {
 		instanceProperties.put("name", targetName);
 		instanceProperties.put("OverrideJavaArgs", "true");
 		instanceProperties.put("iconKey", "solclient");
+		instanceProperties.put("InstanceType", "OneSix");
 		FileOutputStream fInstanceProperties = new FileOutputStream(new File(instanceHome, "instance.cfg"));
 		instanceProperties.store(fInstanceProperties, "");
 		fInstanceProperties.close();
@@ -112,9 +113,9 @@ public class PolyVersionCreator extends MCVersionCreator {
 			"formatVersion", 1
 		), fMMCPack, StandardCharsets.UTF_8);
 		fMMCPack.close();
-		File solIcon = new File(polyRoot,"icons/solclient.png");
+		File solIcon = new File(multimcRoot,"icons/solclient.png");
 		solIcon.getParentFile().mkdirs();
-		InputStream iconRes = PolyVersionCreator.class.getResourceAsStream("/logo_128x.png");
+		InputStream iconRes = MultiMCVersionCreator.class.getResourceAsStream("/logo_128x.png");
 		FileUtils.copyInputStreamToFile(iconRes, solIcon);
 	}
 
@@ -134,7 +135,8 @@ public class PolyVersionCreator extends MCVersionCreator {
 			args = instanceProperties.getProperty("JvmArgs");
 			args += " -D"+property+"="+value;
 			instanceProperties.replace("JvmArgs", args);
-		}else{
+		}
+		else {
 			args = "-D"+property+"="+value;
 			instanceProperties.put("JvmArgs", args);
 		}

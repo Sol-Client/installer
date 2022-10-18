@@ -25,7 +25,7 @@
 package io.github.solclient.installer;
 
 import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_MINECRAFT;
-import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_POLYMC;
+import static io.github.solclient.installer.Launchers.LAUNCHER_TYPE_MULTIMC;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -50,7 +50,7 @@ import org.apache.commons.io.IOUtils;
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.util.ClientRelease;
 import io.github.solclient.installer.util.MCVersionCreator;
-import io.github.solclient.installer.util.PolyVersionCreator;
+import io.github.solclient.installer.util.MultiMCVersionCreator;
 import io.github.solclient.installer.util.Utils;
 import io.github.solclient.installer.util.VersionCreator;
 import io.toadlabs.jfgjds.JsonDeserializer;
@@ -104,8 +104,8 @@ public class Installer {
 				default:
 					creator = new MCVersionCreator(data, cacheFolder, "Sol Client " + latest.getId());
 					break;
-				case Launchers.LAUNCHER_TYPE_POLYMC:
-					creator = new PolyVersionCreator(data, cacheFolder, "Sol Client " + latest.getId());
+				case Launchers.LAUNCHER_TYPE_MULTIMC:
+					creator = new MultiMCVersionCreator(data, cacheFolder, "Sol Client " + latest.getId());
 					break;
 			}
 
@@ -296,8 +296,8 @@ public class Installer {
 				}
 
 				return true;
-			case LAUNCHER_TYPE_POLYMC:
-				return true; //everything is done in PolyVersionCreator
+			case LAUNCHER_TYPE_MULTIMC:
+				return true; //everything is done in MultiMCVersionCreator
 		}
 	}
 

@@ -53,11 +53,11 @@ public class ChooseLauncherStep extends JPanel {
 			frame.next();
 		});
 
-		JButton installPolyMC = new JButton("PolyMC");
-		installPolyMC.setBounds(260, 90, 100, 30);
-		add(installPolyMC);
-		installPolyMC.addActionListener((event) -> {
-			frame.setInstallerType(Launchers.LAUNCHER_TYPE_POLYMC);
+		JButton installMultiMC = new JButton("MultiMC");
+		installMultiMC.setBounds(260, 90, 100, 30);
+		add(installMultiMC);
+		installMultiMC.addActionListener((event) -> {
+			frame.setInstallerType(Launchers.LAUNCHER_TYPE_MULTIMC);
 			frame.next();
 		});
 	}

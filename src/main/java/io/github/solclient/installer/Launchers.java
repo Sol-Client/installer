@@ -32,24 +32,23 @@ import io.github.solclient.installer.util.OperatingSystem;
 
 public class Launchers {
 	/**
-	 * PolyMC/MultiMC
+	 * MultiMC and forks.
 	 */
-	public static final int LAUNCHER_TYPE_POLYMC = 0;
+	public static final int LAUNCHER_TYPE_MULTIMC = 0;
 	public static final int LAUNCHER_TYPE_MINECRAFT = 1;
 	private static final List<File> MINECRAFT_LAUNCHER_PATHS;
-	private static final List<File> POLYMC_PATHS;
+	private static final List<File> MULTIMC_PATHS;
 	static {
-		List<File> polyPaths;
-		switch (OperatingSystem.current()) {
-					default:
-						polyPaths = Arrays.asList(new File(System.getProperty("user.home"), ".local/share/PolyMC"),
-								new File(System.getProperty("user.home"), ".var/app/org.polymc.PolyMC/data/polymc"));
-						break;
-					case OSX:
-					case WINDOWS:
-						polyPaths = Arrays.asList(new File(OperatingSystem.OSX.getDataDir(), "PolyMC"));
+		List<File> multimcPaths;
+		switch(OperatingSystem.current()) {
+			default:
+				multimcPaths = Arrays.asList(new File(System.getProperty("user.home"), ".local/share/multimc"));
+				break;
+			case OSX:
+			case WINDOWS:
+				multimcPaths = Arrays.asList(new File(OperatingSystem.current().getDataDir(), "MultiMC"));
 		}
-		POLYMC_PATHS = polyPaths;
+		MULTIMC_PATHS = multimcPaths;
 		MINECRAFT_LAUNCHER_PATHS = Arrays.asList(new File(OperatingSystem.current().getDataDir(),
 						OperatingSystem.current() == OperatingSystem.OSX ? "minecraft" : ".minecraft"));
 	}
@@ -57,8 +56,8 @@ public class Launchers {
 		switch(type) {
 			case LAUNCHER_TYPE_MINECRAFT:
 				return MINECRAFT_LAUNCHER_PATHS;
-			case LAUNCHER_TYPE_POLYMC:
-				return POLYMC_PATHS;
+			case LAUNCHER_TYPE_MULTIMC:
+				return MULTIMC_PATHS;
 			default:
 				throw new IllegalArgumentException();
 		}
@@ -67,7 +66,7 @@ public class Launchers {
 		switch(type) {
 			case LAUNCHER_TYPE_MINECRAFT:
 				return new File(data, "versions/" + version + "/" + version + ".jar");
-			case LAUNCHER_TYPE_POLYMC:
+			case LAUNCHER_TYPE_MULTIMC:
 				return new File(data, "libraries/com/mojang/minecraft/" + version + "/minecraft-" + version + "-client.jar");
 			default:
 				throw new IllegalArgumentException();
