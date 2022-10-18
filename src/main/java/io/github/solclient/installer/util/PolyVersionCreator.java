@@ -35,6 +35,7 @@ import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 
 import io.github.solclient.installer.InstallStatusCallback;
+import io.toadlabs.jfgjds.JsonSerializer;
 import io.toadlabs.jfgjds.data.JsonArray;
 import io.toadlabs.jfgjds.data.JsonObject;
 
@@ -42,16 +43,6 @@ public class PolyVersionCreator extends MCVersionCreator {
 	File instanceHome;
 	File polyRoot;
 	String version;
-	private static final String MMC_PACK = "{\n" +
-"    \"components\": [\n" +
-"        {\n" +
-"            \"important\": true,\n" +
-"            \"uid\": \"net.minecraft\",\n" +
-"            \"version\": \"1.8.9\"\n" +
-"        }\n" +
-"    ],\n" +
-"    \"formatVersion\": 1\n" +
-"}";
 	Properties instanceProperties = new Properties();
 
 	public PolyVersionCreator(File gamedir, File tmpDir, String targetName) {
@@ -112,7 +103,14 @@ public class PolyVersionCreator extends MCVersionCreator {
 		instanceProperties.store(fInstanceProperties, "");
 		fInstanceProperties.close();
 		FileOutputStream fMMCPack = new FileOutputStream(new File(instanceHome, "mmc-pack.json"));
-		fMMCPack.write(MMC_PACK.getBytes(StandardCharsets.UTF_8));
+		JsonSerializer.write(JsonObject.of(
+			"components", JsonArray.of(JsonObject.of(
+				"important", true,
+				"uid", "net.minecraft",
+				"version", "1.8.9"
+			)),
+			"formatVersion", 1
+		), fMMCPack, StandardCharsets.UTF_8);
 		fMMCPack.close();
 		File solIcon = new File(polyRoot,"icons/solclient.png");
 		solIcon.getParentFile().mkdirs();
