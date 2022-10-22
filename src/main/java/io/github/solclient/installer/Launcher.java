@@ -32,9 +32,6 @@ import io.github.solclient.installer.util.OperatingSystem;
 
 public final class Launcher {
 
-	/**
-	 * MultiMC
-	 */
 	public static final int MULTIMC = 0, PRISM = 1, MOJANG = 2;
 	private static final List<File> MOJANG_PATHS, MULTIMC_PATHS, PRISM_PATHS;
 
