@@ -67,10 +67,6 @@ public enum OperatingSystem {
 		return false;
 	}
 
-	public static void main(String[] args) throws IOException {
-		System.out.println(current().isDarkMode());
-	}
-
 	private static List<String> getProcessOutput(String... command) throws IOException {
 		Process process = new ProcessBuilder(command).start();
 		try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
