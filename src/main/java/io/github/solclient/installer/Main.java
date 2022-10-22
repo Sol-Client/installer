@@ -27,8 +27,9 @@ package io.github.solclient.installer;
 import javax.swing.JFrame;
 
 import io.github.solclient.installer.ui.InstallerFrame;
+import io.github.solclient.installer.util.*;
 import io.github.solclient.installer.locale.Locale;
-import io.github.solclient.installer.util.VersionCreatorUtils;
+
 import javax.swing.JOptionPane;
 
 import com.formdev.flatlaf.*;
@@ -38,7 +39,12 @@ public class Main {
 	public static void main(String[] args) {
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		Locale.setLocale(java.util.Locale.getDefault());
-		FlatDarkLaf.setup();
+		if(OperatingSystem.current().isDarkMode()) {
+			FlatDarkLaf.setup();
+		}
+		else {
+			FlatLightLaf.setup();
+		}
 
 		if(!VersionCreatorUtils.SHA1Supported()) {
 			JOptionPane.showMessageDialog(null, Locale.get(Locale.UI_NO_SHA1), Locale.get(Locale.UI_ERROR),

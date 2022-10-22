@@ -24,7 +24,8 @@
 
 package io.github.solclient.installer.util;
 
-import java.io.File;
+import java.io.*;
+import java.util.*;
 
 // TODO -> integers
 public enum OperatingSystem {
@@ -40,6 +41,46 @@ public enum OperatingSystem {
 
 	public File getDataDir() {
 		return dataDir;
+	}
+
+	public boolean isDarkMode() {
+		try {
+			// based on https://github.com/JFormDesigner/FlatLaf/issues/204
+			switch(this) {
+				case LINUX:
+					String output = getProcessOutput("dbus-send", "--session", "--print-reply=literal",
+							"--dest=org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop",
+							"org.freedesktop.portal.Settings.Read", "string:org.freedesktop.appearance",
+							"string:color-scheme").get(0);
+					output = output.substring(output.indexOf("uint32") + 7);
+					return output.equals("1");
+				case OSX:
+					return getProcessOutput("defaults", "read", "NSGlobalDomain", "AppleInterfaceStyle").get(0)
+							.equalsIgnoreCase("dark");
+				case WINDOWS:
+					return getProcessOutput("reg", "query",
+							"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\\\Themes\\\\Personalize", "/v",
+							"AppsUseLightTheme").stream().anyMatch((line) -> line.contains("0x0"));
+			}
+		}
+		catch(Throwable error) {} // hacky but worth it
+		return false;
+	}
+
+	public static void main(String[] args) throws IOException {
+		System.out.println(current().isDarkMode());
+	}
+
+	private static List<String> getProcessOutput(String... command) throws IOException {
+		Process process = new ProcessBuilder(command).start();
+		try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			List<String> result = new ArrayList<>();
+			String line;
+			while((line = reader.readLine()) != null) {
+				result.add(line);
+			}
+			return result;
+		}
 	}
 
 	public static OperatingSystem current() {
