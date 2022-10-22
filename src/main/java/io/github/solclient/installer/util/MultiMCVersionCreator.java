@@ -72,7 +72,6 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 		libsFolder = new File(instanceHome, "libraries");
 		libsFolder.mkdirs();
 		targetJar = new File(libsFolder, "transformed.jar");
-
 	}
 
 	public String getConfigFile() {
@@ -84,13 +83,14 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 		if(!super.load(cb)) {
 			return false;
 		}
-		if(gameJsonObject.contains("javaVersion")) {
-			int javaMajor = gameJsonObject.get("javaVersion").asObject().get("majorVersion").getIntNumberValue();
-			gameJsonObject.put("compatibleJavaMajors", javaMajor);
-			gameJsonObject.remove("javaVersion");
-		}
+		gameJsonObject.remove("javaVersion");
+		gameJsonObject.remove("complianceLevel");
 		gameJsonObject.remove("downloads");
 		gameJsonObject.put("name", targetName);
+		// I don't know any more
+		gameJsonObject.put("formatVersion", 1);
+		gameJsonObject.put("uid", "net.minecraft");
+		gameJsonObject.remove("logging");
 		return true;
 	}
 
@@ -105,14 +105,20 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 		instanceProperties.put("name", targetName);
 		instanceProperties.put("OverrideJavaArgs", "true");
 		instanceProperties.put("iconKey", "solclient");
-		instanceProperties.put("InstanceType", "OneSix");
+		if(getClass().equals(MultiMCVersionCreator.class)) {
+			instanceProperties.put("InstanceType", "OneSix");
+		}
 		FileOutputStream fInstanceProperties = new FileOutputStream(new File(instanceHome, "instance.cfg"));
 		instanceProperties.store(fInstanceProperties, "");
 		fInstanceProperties.close();
 		FileOutputStream fMMCPack = new FileOutputStream(new File(instanceHome, "mmc-pack.json"));
-		JsonSerializer.write(JsonObject.of("components",
-				JsonArray.of(JsonObject.of("important", true, "uid", "net.minecraft", "version", "1.8.9")),
-				"formatVersion", 1), fMMCPack, StandardCharsets.UTF_8);
+		JsonSerializer.write(
+				JsonObject
+						.of("components",
+								JsonArray.of(JsonObject.of("important", true, "uid", "net.minecraft", "version",
+										"1.8.9", "cachedName", targetName)),
+								"formatVersion", 1),
+				fMMCPack, StandardCharsets.UTF_8);
 		fMMCPack.close();
 		File solIcon = new File(multimcRoot, "icons/solclient.png");
 		solIcon.getParentFile().mkdirs();
