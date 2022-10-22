@@ -39,28 +39,24 @@ import io.toadlabs.jfgjds.data.JsonArray;
 import io.toadlabs.jfgjds.data.JsonObject;
 import io.toadlabs.jfgjds.data.JsonValue;
 
-public class MCVersionCreator implements VersionCreator{
+public class MCVersionCreator implements VersionCreator {
 
-	File tempDir;
-	File targetDir;
-	File gameJson;
-	File targetJson;
+	File tempDir, targetDir, gameJson, targetJson;
 	JsonObject gameJsonObject;
-	File gameJar;
-	File targetJar;
+	File gameJar, targetJar;
 	String targetName;
 	File libsFolder;
 
 	MCVersionCreator() {}
 
-	public MCVersionCreator(File gamedir, File tempDir, String targetVid) {
-		targetName = targetVid;
+	public MCVersionCreator(File gamedir, File tempDir, String targetName) {
+		this.targetName = targetName;
 		this.tempDir = tempDir;
 		gameJson = new File(gamedir, "versions/1.8.9/1.8.9.json");
 		gameJson.getParentFile().mkdirs(); // In case of user hasn't downloaded vanilla version yet.
 		gameJar = new File(gamedir, "versions/1.8.9/1.8.9.jar");
-		targetJson = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".json");
-		targetJar = new File(gamedir, "versions/"+targetVid+"/"+targetVid+".jar");
+		targetJson = new File(gamedir, "versions/" + targetName + "/" + targetName + ".json");
+		targetJar = new File(gamedir, "versions/" + targetName + "/" + targetName + ".jar");
 		targetJson.getParentFile().mkdirs();
 		libsFolder = new File(gamedir, "libraries");
 	}
@@ -71,7 +67,7 @@ public class MCVersionCreator implements VersionCreator{
 			gameJsonObject = JsonDeserializer.read(new FileInputStream(gameJson), StandardCharsets.UTF_8).asObject();
 		}
 		else {
-			cb.setTextStatus(Locale.getString(Locale.MSG_SEARCHING_MINECRAFT, "1.8.9"));
+			cb.setTextStatus(Locale.get(Locale.MSG_SEARCHING_MINECRAFT, "1.8.9"));
 			gameJsonObject = getMinecraftJson("1.8.9", cb);
 		}
 		if(gameJar == null) {
@@ -81,13 +77,15 @@ public class MCVersionCreator implements VersionCreator{
 		if(downloads != null && downloads.contains("client")) {
 			JsonObject client = downloads.get("client").asObject();
 			if(!VersionCreatorUtils.verify(gameJar, client.get("sha1").getStringValue())) {
-				cb.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, gameJar.getName()));
-				Utils.downloadFileMonitored(gameJar,new URL(client.get("url").getStringValue()), cb);
-			}else{
-				cb.setTextStatus(Locale.getString(Locale.MSG_JAR_VERIFIED,gameJar.getName()));
+				cb.setTextStatus(Locale.get(Locale.MSG_DOWNLOADING_GENERIC, gameJar.getName()));
+				Utils.downloadFileMonitored(gameJar, new URL(client.get("url").getStringValue()), cb);
 			}
-		}else {
-			cb.setTextStatus(Locale.getString(Locale.MSG_DAMAGED_MC_JSON));
+			else {
+				cb.setTextStatus(Locale.get(Locale.MSG_JAR_VERIFIED, gameJar.getName()));
+			}
+		}
+		else {
+			cb.setTextStatus(Locale.get(Locale.MSG_DAMAGED_MC_JSON));
 			return false;
 		}
 		gameJsonObject.put("id", targetName);
@@ -95,19 +93,22 @@ public class MCVersionCreator implements VersionCreator{
 		return true;
 	}
 
-	private JsonObject getMinecraftJson(String mcVersion, InstallStatusCallback cb) throws IOException{
-		JsonObject versionManifest = Utils.json(new URL("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json"));
+	private JsonObject getMinecraftJson(String mcVersion, InstallStatusCallback cb) throws IOException {
+		JsonObject versionManifest = Utils
+				.json(new URL("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json"));
 		if(versionManifest.contains("versions")) {
-			for(JsonValue versionValue  : versionManifest.get("versions").asArray()) {
+			for(JsonValue versionValue : versionManifest.get("versions").asArray()) {
 				JsonObject version = versionValue.asObject();
-				if(mcVersion.equals(version.getOpt("id").map(JsonValue::getStringValue).orElse(null)) && version.contains("url")) {
+				if(mcVersion.equals(version.getOpt("id").map(JsonValue::getStringValue).orElse(null))
+						&& version.contains("url")) {
 					return Utils.json(new URL(version.get("url").getStringValue()));
 				}
 			}
-			cb.setTextStatus(Locale.getString(Locale.MSG_NO_MINECRAFT, mcVersion));
+			cb.setTextStatus(Locale.get(Locale.MSG_NO_MINECRAFT, mcVersion));
 			return null;
-		}else{
-			cb.setTextStatus(Locale.getString(Locale.MSG_INVALID_MANIFEST));
+		}
+		else {
+			cb.setTextStatus(Locale.get(Locale.MSG_INVALID_MANIFEST));
 			return null;
 		}
 	}
@@ -123,31 +124,20 @@ public class MCVersionCreator implements VersionCreator{
 			game.add(arg);
 		}
 
-		game.add(JsonObject.of(
-			"rules", JsonArray.of(
-				JsonObject.of("action", "allow", "features", JsonObject.of("is_demo_user", true))
-			),
-			"value", "--demo"
-		));
+		game.add(JsonObject.of("rules",
+				JsonArray.of(JsonObject.of("action", "allow", "features", JsonObject.of("is_demo_user", true))),
+				"value", "--demo"));
 
-		game.add(JsonObject.of(
-			"rules", JsonArray.of(
-				JsonObject.of("action", "allow", "features", JsonObject.of("has_custom_resolution", true))
-			),
-			"value", JsonArray.of(
-				"--width",
-				"${resolution_width}",
-				"--height",
-				"${resolution_height}"
-			)
-		));
+		game.add(JsonObject.of("rules",
+				JsonArray
+						.of(JsonObject.of("action", "allow", "features", JsonObject.of("has_custom_resolution", true))),
+				"value", JsonArray.of("--width", "${resolution_width}", "--height", "${resolution_height}")));
 
 		JsonArray jvm = arguments.computeIfAbsent("jvm", JsonArray.DEFAULT_COMPUTION).asArray();
 		jvm.add("-cp").add("${classpath}");
-		jvm.add(JsonObject.of(
-			"rules", JsonArray.of(JsonObject.of("action", "allow", "os", JsonObject.of("name", "windows"))),
-			"value", "-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump"
-		));
+		jvm.add(JsonObject.of("rules",
+				JsonArray.of(JsonObject.of("action", "allow", "os", JsonObject.of("name", "windows"))), "value",
+				"-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump"));
 
 		addProperty("java.library.path", "${natives_directory}");
 	}
@@ -191,12 +181,12 @@ public class MCVersionCreator implements VersionCreator{
 	}
 
 	@Override
-	public boolean putFullLibrary(String url, String mavenName, InstallStatusCallback cb) throws IOException{
+	public boolean putFullLibrary(String url, String mavenName, InstallStatusCallback cb) throws IOException {
 		String libLocalPath = VersionCreatorUtils.mavenNameToPath(mavenName);
 		File libPath = new File(libsFolder, libLocalPath);
-		cb.setTextStatus(Locale.getString(Locale.MSG_DOWNLOADING_GENERIC, mavenName));
+		cb.setTextStatus(Locale.get(Locale.MSG_DOWNLOADING_GENERIC, mavenName));
 		if(!libPath.getParentFile().exists() && !libPath.getParentFile().mkdirs()) {
-			cb.setTextStatus(Locale.getString(Locale.MSG_CANT_CREATE_FOLDER, libPath.getAbsolutePath()));
+			cb.setTextStatus(Locale.get(Locale.MSG_CANT_CREATE_FOLDER, libPath.getAbsolutePath()));
 			return false;
 		}
 		Utils.downloadFileMonitored(libPath, new URL(url), cb);

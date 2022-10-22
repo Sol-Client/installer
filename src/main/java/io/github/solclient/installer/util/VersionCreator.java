@@ -30,16 +30,29 @@ import java.io.File;
 import java.io.IOException;
 
 public interface VersionCreator {
+
 	boolean load(InstallStatusCallback cb) throws IOException;
+
 	void addProperty(String property, String name);
+
 	void addGameArguments(String... arguments);
+
 	void putLibrary(File origin, String mavenName) throws IOException;
+
 	void removeLibrary(String mavenName);
+
 	boolean putFullLibrary(String url, String mavenName, InstallStatusCallback cb) throws IOException;
+
 	File getSourceClient();
+
 	File getTargetClient();
+
 	String getTargetName();
+
 	void computeTargetClient() throws IOException;
+
 	void save(String mainClass) throws IOException;
+
 	void setTweakerClass(String tweakerClass);
+
 }

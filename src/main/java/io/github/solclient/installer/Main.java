@@ -36,14 +36,16 @@ import javax.swing.JOptionPane;
 public class Main {
 
 	public static void main(String[] args) {
+		System.setProperty("awt.useSystemAAFontSettings", "on");
 		Locale.setLocale(java.util.Locale.getDefault());
 		FlatDarculaLaf.setup();
-		System.setProperty("awt.useSystemAAFontSettings", "on");
+
 		if(!VersionCreatorUtils.SHA1Supported()) {
-			JOptionPane.showMessageDialog(null, Locale.getString(Locale.UI_NO_SHA1), Locale.getString(Locale.UI_ERROR),
+			JOptionPane.showMessageDialog(null, Locale.get(Locale.UI_NO_SHA1), Locale.get(Locale.UI_ERROR),
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
 		InstallerFrame frame = new InstallerFrame();
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

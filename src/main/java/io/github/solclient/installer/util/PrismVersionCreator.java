@@ -24,49 +24,18 @@
 
 package io.github.solclient.installer.util;
 
-import java.io.IOException;
-import java.net.URL;
+import java.io.File;
 
-import io.toadlabs.jfgjds.data.JsonObject;
-import io.toadlabs.jfgjds.data.JsonValue;
+// Yep. Just one change.
+public class PrismVersionCreator extends MultiMCVersionCreator {
 
-public final class ClientRelease {
-
-	private String id, gameJar;
-
-	public static ClientRelease parse(JsonObject obj) {
-		ClientRelease rel = new ClientRelease();
-		rel.id = obj.get("name").getStringValue();
-		JsonObject gameAsset = null;
-
-		for(JsonValue assetObj : obj.get("assets").asArray()) {
-			JsonObject asset = assetObj.asObject();
-			if(asset.get("name").getStringValue().equals("game.jar")) {
-				gameAsset = asset;
-				break;
-			}
-		}
-
-		if(gameAsset == null) {
-			throw new IllegalArgumentException("No game.jar found for version " + rel.id);
-		}
-
-		rel.gameJar = gameAsset.get("browser_download_url").getStringValue();
-
-		return rel;
+	public PrismVersionCreator(File gamedir, File tmpDir, String targetName) {
+		super(gamedir, tmpDir, targetName);
 	}
 
-	public String getId() {
-		return id;
-	}
-
-	public String getGameJar() {
-		return gameJar;
-	}
-
-	public static ClientRelease latest() throws IOException {
-		return parse(Utils.json(new URL(System.getProperty("io.github.solclient.client.install.api",
-				"https://api.github.com/repos/TheKodeToad/Sol-Client/releases/latest"))));
+	@Override
+	public String getConfigFile() {
+		return "prismlauncher.cfg";
 	}
 
 }

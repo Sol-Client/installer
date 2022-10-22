@@ -2,14 +2,14 @@
  * MIT License
  *
  * Copyright (c) 2022 TheKodeToad, artDev & other contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  *	The above copyright notice and this permission notice shall be included in all
  *	copies or substantial portions of the Software.
  *
@@ -31,25 +31,28 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Formatter;
 import org.apache.commons.io.FileUtils;
 
-public class VersionCreatorUtils {
+public final class VersionCreatorUtils {
+
 	private static MessageDigest shaDigest;
+
 	static {
 		try {
 			shaDigest = MessageDigest.getInstance("SHA-1");
-		} catch (NoSuchAlgorithmException ex) {
-			ex.printStackTrace();
+		}
+		catch(NoSuchAlgorithmException error) {
+			error.printStackTrace();
 		}
 	}
-	
+
 	public static boolean SHA1Supported() {
 		return shaDigest != null;
 	}
-	
+
 	public static String mavenNameToPath(String mavenName) {
 		String[] mvnNameSplit = mavenName.split(":");
-		return mvnNameSplit[0].replaceAll("\\.", "/") + "/" + mvnNameSplit[1] + "/" + mvnNameSplit[2] + "/" + mvnNameSplit[1] + "-" + mvnNameSplit[2] + ".jar";
+		return mvnNameSplit[0].replaceAll("\\.", "/") + "/" + mvnNameSplit[1] + "/" + mvnNameSplit[2] + "/"
+				+ mvnNameSplit[1] + "-" + mvnNameSplit[2] + ".jar";
 	}
-	
 
 	public static String compute(File input) throws IOException {
 		return byteToHex(shaDigest.digest(FileUtils.readFileToByteArray(input)));
@@ -66,11 +69,13 @@ public class VersionCreatorUtils {
 
 	private static String byteToHex(final byte[] hash) {
 		String result;
-		try (Formatter formatter = new Formatter()) {
-			for (byte b : hash) {
+		try(Formatter formatter = new Formatter()) {
+			for(byte b : hash) {
 				formatter.format("%02x", b);
-			}   result = formatter.toString();
+			}
+			result = formatter.toString();
 		}
 		return result;
 	}
+
 }

@@ -54,14 +54,15 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 		String instancesFldr = "instances";
 		Properties multimcProps = new Properties();
 		try {
-			FileInputStream props = new FileInputStream(new File(gamedir, "multimc.cfg"));
+			FileInputStream props = new FileInputStream(new File(gamedir, getConfigFile()));
 			multimcProps.load(props);
 			props.close();
-			if (multimcProps.containsKey("InstanceDir")) {
+			if(multimcProps.containsKey("InstanceDir")) {
 				instancesFldr = multimcProps.getProperty("InstanceDir");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		}
+		catch(Exception error) {
+			error.printStackTrace(); // please no
 		}
 
 		instanceHome = new File(gamedir, instancesFldr + "/" + targetName);
@@ -73,8 +74,13 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 		targetJar = new File(libsFolder, "transformed.jar");
 
 	}
+
+	public String getConfigFile() {
+		return "multimc.cfg";
+	}
+
 	@Override
-	public boolean load(InstallStatusCallback cb) throws IOException{
+	public boolean load(InstallStatusCallback cb) throws IOException {
 		if(!super.load(cb)) {
 			return false;
 		}
@@ -90,11 +96,11 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 
 	@Override
 	void update() {
-		//Do nothing: the original changes formats for MC arguments
+		// Do nothing: the original changes formats for MC arguments
 	}
 
 	@Override
-	public void save(String main) throws IOException{
+	public void save(String main) throws IOException {
 		super.save(main);
 		instanceProperties.put("name", targetName);
 		instanceProperties.put("OverrideJavaArgs", "true");
@@ -104,18 +110,13 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 		instanceProperties.store(fInstanceProperties, "");
 		fInstanceProperties.close();
 		FileOutputStream fMMCPack = new FileOutputStream(new File(instanceHome, "mmc-pack.json"));
-		JsonSerializer.write(JsonObject.of(
-			"components", JsonArray.of(JsonObject.of(
-				"important", true,
-				"uid", "net.minecraft",
-				"version", "1.8.9"
-			)),
-			"formatVersion", 1
-		), fMMCPack, StandardCharsets.UTF_8);
+		JsonSerializer.write(JsonObject.of("components",
+				JsonArray.of(JsonObject.of("important", true, "uid", "net.minecraft", "version", "1.8.9")),
+				"formatVersion", 1), fMMCPack, StandardCharsets.UTF_8);
 		fMMCPack.close();
-		File solIcon = new File(multimcRoot,"icons/solclient.png");
+		File solIcon = new File(multimcRoot, "icons/solclient.png");
 		solIcon.getParentFile().mkdirs();
-		InputStream iconRes = MultiMCVersionCreator.class.getResourceAsStream("/logo_128x.png");
+		InputStream iconRes = getClass().getResourceAsStream("/logo_128x.png");
 		FileUtils.copyInputStreamToFile(iconRes, solIcon);
 	}
 
@@ -133,17 +134,17 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 		String args;
 		if(instanceProperties.containsKey("JvmArgs")) {
 			args = instanceProperties.getProperty("JvmArgs");
-			args += " -D"+property+"="+value;
+			args += " -D" + property + "=" + value;
 			instanceProperties.replace("JvmArgs", args);
 		}
 		else {
-			args = "-D"+property+"="+value;
+			args = "-D" + property + "=" + value;
 			instanceProperties.put("JvmArgs", args);
 		}
 	}
 
 	@Override
-	public void computeTargetClient() throws IOException{
+	public void computeTargetClient() throws IOException {
 		JsonObject mainJar = new JsonObject();
 		mainJar.put("name", "io.github.solclient:transformed:1.8.9");
 		mainJar.put("MMC-hint", "local");
@@ -152,7 +153,7 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 	}
 
 	@Override
-	public void putLibrary(File origin, String libName) throws IOException{
+	public void putLibrary(File origin, String libName) throws IOException {
 		JsonArray libraries = gameJsonObject.get("libraries").asArray();
 		String mavenPath = VersionCreatorUtils.mavenNameToPath(libName);
 		mavenPath = mavenPath.substring(mavenPath.lastIndexOf("/"));

@@ -24,12 +24,9 @@
 
 package io.github.solclient.installer.ui.step;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 
-import io.github.solclient.installer.Launchers;
+import io.github.solclient.installer.Launcher;
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.ui.InstallerFrame;
 
@@ -39,25 +36,33 @@ public class ChooseLauncherStep extends JPanel {
 
 	public ChooseLauncherStep(InstallerFrame frame) {
 		setLayout(null);
-		JLabel instruction = new JLabel(Locale.getString(Locale.UI_SELECT_LAUNCHER));
+		JLabel instruction = new JLabel(Locale.get(Locale.UI_SELECT_LAUNCHER));
 		instruction.setHorizontalAlignment(SwingConstants.CENTER);
 		instruction.setFont(instruction.getFont().deriveFont(20F));
 		instruction.setBounds(0, 40, InstallerFrame.WIDTH, 40);
 		add(instruction);
 
-		JButton installMinecraft = new JButton("Minecraft");
-		installMinecraft.setBounds(140, 90, 100, 30);
+		JButton installMinecraft = new JButton("Mojang");
+		installMinecraft.setBounds(80, 90, 100, 30);
 		add(installMinecraft);
 		installMinecraft.addActionListener((event) -> {
-			frame.setInstallerType(Launchers.LAUNCHER_TYPE_MINECRAFT);
+			frame.setInstallerType(Launcher.MOJANG);
 			frame.next();
 		});
 
 		JButton installMultiMC = new JButton("MultiMC");
-		installMultiMC.setBounds(260, 90, 100, 30);
+		installMultiMC.setBounds(200, 90, 100, 30);
 		add(installMultiMC);
 		installMultiMC.addActionListener((event) -> {
-			frame.setInstallerType(Launchers.LAUNCHER_TYPE_MULTIMC);
+			frame.setInstallerType(Launcher.MULTIMC);
+			frame.next();
+		});
+
+		JButton installPrism = new JButton("Prism");
+		installPrism.setBounds(320, 90, 100, 30);
+		add(installPrism);
+		installPrism.addActionListener((event) -> {
+			frame.setInstallerType(Launcher.PRISM);
 			frame.next();
 		});
 	}

@@ -51,12 +51,14 @@ public class Utils {
 	public static URL sneakyParse(String spec) {
 		try {
 			return new URL(spec);
-		} catch (MalformedURLException error) {
+		}
+		catch(MalformedURLException error) {
 			throw new IllegalArgumentException(spec);
 		}
 	}
 
-	public static void downloadFileMonitored(File destination, URL url, InstallStatusCallback callback) throws IOException {
+	public static void downloadFileMonitored(File destination, URL url, InstallStatusCallback callback)
+			throws IOException {
 		callback.setProgressBarValues(1000, 0);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
@@ -75,7 +77,7 @@ public class Utils {
 			int cnt;
 			int ov_cnt = 0;
 			byte[] buf = new byte[1024];
-			while ((cnt = stream.read(buf)) != -1) {
+			while((cnt = stream.read(buf)) != -1) {
 				output.write(buf, 0, cnt);
 				ov_cnt += cnt;
 				callback.setProgressBarValues(10000, (int) (ov_cnt * filePercentDivider));
@@ -86,6 +88,7 @@ public class Utils {
 			}
 		}
 	}
+
 	public static String downloadFileToString(URL url) throws IOException {
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
@@ -96,8 +99,8 @@ public class Utils {
 		int cnt;
 		byte[] buf = new byte[1024];
 
-		while ((cnt = stream.read(buf)) != -1) {
-			output.append(new String(buf,0,cnt));
+		while((cnt = stream.read(buf)) != -1) {
+			output.append(new String(buf, 0, cnt));
 		}
 
 		return output.toString();

@@ -30,52 +30,73 @@ import java.util.Comparator;
 import java.util.List;
 import io.github.solclient.installer.util.OperatingSystem;
 
-public class Launchers {
+public final class Launcher {
+
 	/**
-	 * MultiMC and forks.
+	 * MultiMC
 	 */
-	public static final int LAUNCHER_TYPE_MULTIMC = 0;
-	public static final int LAUNCHER_TYPE_MINECRAFT = 1;
-	private static final List<File> MINECRAFT_LAUNCHER_PATHS;
-	private static final List<File> MULTIMC_PATHS;
+	public static final int MULTIMC = 0, PRISM = 1, MOJANG = 2;
+	private static final List<File> MOJANG_PATHS, MULTIMC_PATHS, PRISM_PATHS;
+
 	static {
-		List<File> multimcPaths;
+		List<File> multimcPaths, prismPaths;
 		switch(OperatingSystem.current()) {
 			default:
 				multimcPaths = Arrays.asList(new File(System.getProperty("user.home"), ".local/share/multimc"));
+				prismPaths = Arrays.asList(
+						new File(System.getProperty("user.home"),
+								".var/app/org.prismlauncher.PrismLauncher/data/PrismLauncher"),
+						new File(System.getProperty("user.home"),
+								".local/share/org.prismlauncher.PrismLauncher/data/PrismLauncher"),
+						new File(System.getProperty("user.home"),
+								".var/app/org.polymc.PolyMC/data/polymc") /*
+																			 * prism, for whatever reason, sometimes
+																			 * uses the old data directory
+																			 */);
 				break;
 			case OSX:
 			case WINDOWS:
 				multimcPaths = Arrays.asList(new File(OperatingSystem.current().getDataDir(), "MultiMC"));
+				prismPaths = Arrays.asList(new File(OperatingSystem.current().getDataDir(), "PrismLauncher")); // best
+																												// guess
 		}
 		MULTIMC_PATHS = multimcPaths;
-		MINECRAFT_LAUNCHER_PATHS = Arrays.asList(new File(OperatingSystem.current().getDataDir(),
-						OperatingSystem.current() == OperatingSystem.OSX ? "minecraft" : ".minecraft"));
+		PRISM_PATHS = prismPaths;
+		MOJANG_PATHS = Arrays.asList(new File(OperatingSystem.current().getDataDir(),
+				OperatingSystem.current() == OperatingSystem.OSX ? "minecraft" : ".minecraft"));
 	}
+
 	public static List<File> getLocationsForLauncher(int type) {
 		switch(type) {
-			case LAUNCHER_TYPE_MINECRAFT:
-				return MINECRAFT_LAUNCHER_PATHS;
-			case LAUNCHER_TYPE_MULTIMC:
+			case MOJANG:
+				return MOJANG_PATHS;
+			case MULTIMC:
 				return MULTIMC_PATHS;
+			case PRISM:
+				return PRISM_PATHS;
 			default:
 				throw new IllegalArgumentException();
 		}
 	}
+
 	public static File getVersionJar(File data, String version, int type) {
 		switch(type) {
-			case LAUNCHER_TYPE_MINECRAFT:
+			case MOJANG:
 				return new File(data, "versions/" + version + "/" + version + ".jar");
-			case LAUNCHER_TYPE_MULTIMC:
-				return new File(data, "libraries/com/mojang/minecraft/" + version + "/minecraft-" + version + "-client.jar");
+			case MULTIMC:
+			case PRISM:
+				return new File(data,
+						"libraries/com/mojang/minecraft/" + version + "/minecraft-" + version + "-client.jar");
 			default:
 				throw new IllegalArgumentException();
 		}
 	}
+
 	public static File getDefaultLocation(List<File> locations) {
-		return locations.stream().filter(File::exists).sorted(Comparator.comparingLong((file) -> -deepLastModified(file)))
-				.findFirst().orElse(new File("."));
+		return locations.stream().filter(File::exists)
+				.sorted(Comparator.comparingLong((file) -> -deepLastModified(file))).findFirst().orElse(new File("."));
 	}
+
 	private static long deepLastModified(File file) {
 		long lastModified = file.lastModified();
 
@@ -89,4 +110,5 @@ public class Launchers {
 
 		return lastModified;
 	}
+
 }

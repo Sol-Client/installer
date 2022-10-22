@@ -50,7 +50,7 @@ public enum StepType {
 	}
 
 	public JPanel getPanel(InstallerFrame installer) {
-		if (cachedPanel != null) {
+		if(cachedPanel != null) {
 			return cachedPanel;
 		}
 

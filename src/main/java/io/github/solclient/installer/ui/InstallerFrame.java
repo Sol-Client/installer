@@ -2,14 +2,14 @@
  * MIT License
  *
  * Copyright (c) 2022 TheKodeToad, artDev & other contributors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  *	The above copyright notice and this permission notice shall be included in all
  *	copies or substantial portions of the Software.
  *
@@ -38,15 +38,14 @@ import io.github.solclient.installer.ui.step.StepType;
 
 public class InstallerFrame extends JFrame {
 
-	public static final int WIDTH = 500;
-	public static final int HEIGHT = 300;
-
 	private static final long serialVersionUID = 1L;
+	public static final int WIDTH = 500, HEIGHT = 300;
+
+	private final Installer installer = new Installer();
+	private final JButton previous;
+	private final JButton next;
 	private StepType step;
-	private Installer installer = new Installer();
 	private int launcherType;
-	private JButton previous;
-	private JButton next;
 	private Runnable nextAction;
 
 	public InstallerFrame() {
@@ -61,12 +60,12 @@ public class InstallerFrame extends JFrame {
 		title.setBounds(0, 15, WIDTH, 40);
 		add(title);
 
-		previous = new JButton(Locale.getString(Locale.UI_BACK));
+		previous = new JButton(Locale.get(Locale.UI_BACK));
 		previous.setBounds(20, HEIGHT - 80, 100, 30);
 		previous.addActionListener((event) -> previous());
 		add(previous);
 
-		next = new JButton(Locale.getString(Locale.UI_NEXT));
+		next = new JButton(Locale.get(Locale.UI_NEXT));
 		next.setBounds(WIDTH - 120, HEIGHT - 80, 100, 30);
 		next.addActionListener((event) -> {
 			nextAction.run();
@@ -80,7 +79,7 @@ public class InstallerFrame extends JFrame {
 
 	private void setStep(StepType step) {
 		enableNextButton(true);
-		if (this.step != null) {
+		if(this.step != null) {
 			remove(this.step.getPanel(this));
 		}
 		this.step = step;
@@ -94,7 +93,7 @@ public class InstallerFrame extends JFrame {
 
 	@Override
 	public String getTitle() {
-		return Locale.getString(Locale.UI_TITLE);
+		return Locale.get(Locale.UI_TITLE);
 	}
 
 	public void setInstallerType(int launcher) {
@@ -112,31 +111,30 @@ public class InstallerFrame extends JFrame {
 	public void setNextButtonAction(Runnable r) {
 		this.nextAction = r;
 	}
-	
+
 	public void enableNextButton(boolean enabled) {
 		next.setEnabled(enabled);
 	}
 
 	public void previous() {
-		if (this.step.hasPrevious()) {
+		if(this.step.hasPrevious()) {
 			StepType current = this.step;
 			setStep(this.step.previous());
 			current.clearState();
-			next.setText(Locale.getString(Locale.UI_NEXT));
+			next.setText(Locale.get(Locale.UI_NEXT));
 		}
 	}
 
 	public void next() {
 		if(this.step.hasNext()) {
 			if(!this.step.next().hasNext()) {
-				next.setText(Locale.getString(Locale.UI_FINISH));
+				next.setText(Locale.get(Locale.UI_FINISH));
 			}
-			
+
 			setStep(this.step.next());
+			return;
 		}
-		else {
-			System.exit(0);
-		}
+		System.exit(0);
 	}
 
 }

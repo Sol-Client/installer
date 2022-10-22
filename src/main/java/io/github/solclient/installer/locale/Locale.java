@@ -29,48 +29,49 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public class Locale {
+public final class Locale {
 
-	public static final int MSG_GETTING_VERSION_INFO = 0;
-	public static final int MSG_GETTING_VERSION_INFO_FAILED = 1;
-	public static final int MSG_INSTALLING_VERSION = 2;
-	public static final int MSG_DOWNLOADING_GENERIC = 3;
-	public static final int MSG_DOWNLOADING_CLIENT = 4;
-	public static final int MSG_DOWNLOADING_MAPPINGS = 5;
-	public static final int MSG_NO_MAPPINGS = 6;
-	public static final int MSG_REMAPPING = 7;
-	public static final int MSG_SAVING = 8;
-	public static final int MSG_DOWNLOAD_ERROR = 9;
-	public static final int MSG_INITIALIZATION_FAILED = 10;
-	public static final int MSG_CACHE_FAILED = 11;
-	public static final int MSG_REMAP_FAILED = 12;
-	public static final int MSG_UNPACKING_MAPPINGS = 13;
-	public static final int MSG_CANT_CREATE_FOLDER = 14;
-	public static final int MSG_DAMAGED_MC_JSON = 15;
-	public static final int MSG_JAR_VERIFIED = 16;
-	public static final int UI_TITLE = 17;
-	public static final int UI_BACK = 18;
-	public static final int UI_NEXT = 19;
-	public static final int UI_SELECT_LAUNCHER = 20;
-	public static final int UI_INSTALL_LOCATION = 21;
-	public static final int UI_OH_DEAR = 22;
-	public static final int UI_NO_GAMEDIR = 23;
-	public static final int MSG_DONE = 24;
-	public static final int MSG_EXTRACTING_OPTIFINE = 25;
-	public static final int MSG_INSTALLING_OPTIFINE = 26;
-	public static final int UI_FINISH = 27;
-	public static final int UI_ENABLE_OPTIFINE = 28;
-	public static final int UI_CUSTOMISE = 29;
-	public static final int MSG_CREATING_PROFILE = 30;
-	public static final int MSG_NO_LAUNCHER_PROFILES = 31;
-	public static final int UI_SELECT = 32;
-	public static final int UI_SELECT_GAMEDIR = 33;
-	public static final int UI_ACCESSIBLE_DIRECTORIES = 34;
-	public static final int MSG_INVALID_MANIFEST = 35;
-	public static final int MSG_NO_MINECRAFT = 36;
-	public static final int MSG_SEARCHING_MINECRAFT = 37;
-	public static final int UI_ERROR = 38;
-	public static final int UI_NO_SHA1 = 39;
+	public static final int MSG_GETTING_VERSION_INFO = 0,
+			MSG_GETTING_VERSION_INFO_FAILED = 1,
+			MSG_INSTALLING_VERSION = 2,
+			MSG_DOWNLOADING_GENERIC = 3,
+			MSG_DOWNLOADING_CLIENT = 4,
+			MSG_DOWNLOADING_MAPPINGS = 5,
+			MSG_NO_MAPPINGS = 6,
+			MSG_REMAPPING = 7,
+			MSG_SAVING = 8,
+			MSG_DOWNLOAD_ERROR = 9,
+			MSG_INITIALIZATION_FAILED = 10,
+			MSG_CACHE_FAILED = 11,
+			MSG_REMAP_FAILED = 12,
+			MSG_UNPACKING_MAPPINGS = 13,
+			MSG_CANT_CREATE_FOLDER = 14,
+			MSG_DAMAGED_MC_JSON = 15,
+			MSG_JAR_VERIFIED = 16,
+			UI_TITLE = 17,
+			UI_BACK = 18,
+			UI_NEXT = 19,
+			UI_SELECT_LAUNCHER = 20,
+			UI_INSTALL_LOCATION = 21,
+			UI_OH_DEAR = 22,
+			UI_NO_GAMEDIR = 23,
+			MSG_DONE = 24,
+			MSG_EXTRACTING_OPTIFINE = 25,
+			MSG_INSTALLING_OPTIFINE = 26,
+			UI_FINISH = 27,
+			UI_ENABLE_OPTIFINE = 28,
+			UI_CUSTOMISE = 29,
+			MSG_CREATING_PROFILE = 30,
+			MSG_NO_LAUNCHER_PROFILES = 31,
+			UI_SELECT = 32,
+			UI_SELECT_GAMEDIR = 33,
+			UI_ACCESSIBLE_DIRECTORIES = 34,
+			MSG_INVALID_MANIFEST = 35,
+			MSG_NO_MINECRAFT = 36,
+			MSG_SEARCHING_MINECRAFT = 37,
+			UI_ERROR = 38,
+			UI_NO_SHA1 = 39;
+
 	private static final String[] LOCALE_ARRAY = new String[UI_NO_SHA1 + 1];
 
 	public static void setLocale(java.util.Locale locale) {
@@ -78,13 +79,16 @@ public class Locale {
 		String searchPath1 = "/lang/"+locale.getLanguage()+"_"+locale.getCountry()+".txt";
 		String searchPath2 = "/lang/"+locale.getLanguage()+".txt";
 		URL localeUrl = null;
+
 		if((localeUrl = Locale.class.getResource(searchPath1)) == null) {
 			localeUrl = Locale.class.getResource(searchPath2);
 		}
+
 		if(localeUrl == null) {
-			System.out.println("No locale found for " + locale.getLanguage()+"_"+locale.getCountry());
+			System.err.printf("No locale found for %s_%s\n", locale.getLanguage(), locale.getCountry());
 			return;
 		}
+
 		parseLocale(localeUrl);
 
 	}
@@ -97,9 +101,9 @@ public class Locale {
 				LOCALE_ARRAY[ctr] = line.replace("\\n", "\n");
 			}
 		}
-		catch(IOException e) {
-			System.err.println("Could not read locale");
-			e.printStackTrace();
+		catch(IOException error) {
+			System.err.println("Could not read locale due to an I/O exception:");
+			error.printStackTrace();
 			return;
 		}
 	}
@@ -147,12 +151,12 @@ public class Locale {
 		LOCALE_ARRAY[UI_NO_SHA1] = "SHA1 is not supported by this JVM";
 	}
 
-	public static String getString(int msg) {
+	public static String get(int msg) {
 		return LOCALE_ARRAY[msg];
 	}
 
-	public static String getString(int msg, Object... varArg) {
-		return String.format(LOCALE_ARRAY[msg], varArg);
+	public static String get(int msg, Object... formatArgs) {
+		return String.format(LOCALE_ARRAY[msg], formatArgs);
 	}
 
 }
