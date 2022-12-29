@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.solclient.installer.ui.step;
+package io.github.solclient.installer.ui.step.impl;
 
 import java.awt.event.*;
 import java.io.File;

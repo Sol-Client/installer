@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.solclient.installer.ui.step;
+package io.github.solclient.installer.ui.step.impl;
 
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.ui.InstallerFrame;

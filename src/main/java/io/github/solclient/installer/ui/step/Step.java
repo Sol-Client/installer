@@ -24,54 +24,23 @@
 
 package io.github.solclient.installer.ui.step;
 
-import java.util.function.Function;
+import java.util.function.Supplier;
 
-import javax.swing.JPanel;
+public final class Step<T> {
 
-import io.github.solclient.installer.ui.InstallerFrame;
-
-public enum StepType {
-	CHOOSE_LAUNCHER(ChooseLauncherStep::new, false), INSTALL_LOCATION(InstallLocationStep::new, true),
-	CUSTOMISE(CustomiseStep::new, true), INSTALL(InstallStep::new, true);
-
-	private JPanel cachedPanel;
-	private Function<InstallerFrame, JPanel> panel;
+	private final Supplier<T> supplier;
 	private final boolean nextShown;
 
-	private StepType(Function<InstallerFrame, JPanel> panel, boolean nextShown) {
-		this.panel = panel;
+	public Step(Supplier<T> supplier, boolean nextShown) {
+		this.supplier = supplier;
 		this.nextShown = nextShown;
 	}
 
-	public void clearState() {
-		cachedPanel = null;
+	public StepContent<T> createContent() {
+		return new StepContent<>(this, supplier.get());
 	}
 
-	public JPanel getPanel(InstallerFrame installer) {
-		if (cachedPanel != null) {
-			return cachedPanel;
-		}
-
-		return cachedPanel = panel.apply(installer);
-	}
-
-	public boolean hasNext() {
-		return ordinal() < values().length - 1;
-	}
-
-	public StepType next() {
-		return values()[ordinal() + 1];
-	}
-
-	public boolean hasPrevious() {
-		return ordinal() != 0;
-	}
-
-	public StepType previous() {
-		return values()[ordinal() - 1];
-	}
-
-	public boolean nextButtonShown() {
+	public boolean isNextShown() {
 		return nextShown;
 	}
 

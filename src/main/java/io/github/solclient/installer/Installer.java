@@ -131,7 +131,7 @@ public final class Installer {
 
 			if (enableOptifine) {
 				callback.setTextStatus(Locale.get(Locale.MSG_DOWNLOADING_GENERIC, "OptiFine"));
-				Utils.downloadFileMonitored(optifineJar, getOptifineUrl(), callback);
+				Utils.downloadFileMonitored(optifineJar, getOptiFineUrl(), callback);
 			}
 
 			callback.setTextStatus(Locale.get(Locale.MSG_DOWNLOADING_MAPPINGS));
@@ -252,7 +252,7 @@ public final class Installer {
 		}
 	}
 
-	private URL getOptifineUrl() throws IOException {
+	private URL getOptiFineUrl() throws IOException {
 		URLConnection connection = new URL("https://optifine.net/adloadx?f=OptiFine_1.8.9_HD_U_M5.jar")
 				.openConnection();
 		connection.setRequestProperty("User-Agent", Utils.USER_AGENT);

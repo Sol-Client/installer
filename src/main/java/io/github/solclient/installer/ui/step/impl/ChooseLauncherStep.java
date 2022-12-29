@@ -22,13 +22,14 @@
  * SOFTWARE.
  */
 
-package io.github.solclient.installer.ui.step;
+package io.github.solclient.installer.ui.step.impl;
 
 import javax.swing.*;
 
 import io.github.solclient.installer.Launcher;
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.ui.InstallerFrame;
+import io.github.solclient.installer.ui.step.Step;
 
 public class ChooseLauncherStep extends JPanel {
 

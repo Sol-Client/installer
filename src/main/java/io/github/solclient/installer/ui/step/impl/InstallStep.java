@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package io.github.solclient.installer.ui.step;
+package io.github.solclient.installer.ui.step.impl;
 
 import java.awt.EventQueue;
 
@@ -32,7 +32,7 @@ import io.github.solclient.installer.ui.InstallerFrame;
 
 public class InstallStep extends javax.swing.JPanel implements InstallStatusCallback {
 
-	private InstallerFrame frame;
+	private final InstallerFrame frame;
 	private int lastMax = 100;
 
 	/**
@@ -40,6 +40,7 @@ public class InstallStep extends javax.swing.JPanel implements InstallStatusCall
 	 */
 	public InstallStep(InstallerFrame frame) {
 		this.frame = frame;
+
 		initComponents();
 		frame.enableNextButton(false);
 		frame.getInstaller().install(frame.getInstallerType(), this);

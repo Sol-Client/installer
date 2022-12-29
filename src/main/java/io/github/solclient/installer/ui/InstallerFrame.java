@@ -30,7 +30,8 @@ import javax.swing.*;
 
 import io.github.solclient.installer.Installer;
 import io.github.solclient.installer.locale.Locale;
-import io.github.solclient.installer.ui.step.StepType;
+import io.github.solclient.installer.ui.step.*;
+import io.github.solclient.installer.ui.step.impl.*;
 
 public class InstallerFrame extends JFrame {
 
@@ -40,11 +41,15 @@ public class InstallerFrame extends JFrame {
 	private final Installer installer = new Installer();
 	private final JButton previous;
 	private final JButton next;
-	private StepType step;
+	private final StepManager<JPanel> steps;
 	private int launcherType;
 	private Runnable nextAction;
 
 	public InstallerFrame() {
+		steps = new StepManager<JPanel>(new Step[] { new Step<>(() -> new ChooseLauncherStep(this), false),
+				new Step<>(() -> new InstallLocationStep(this), true),
+				new Step<>(() -> new CustomiseStep(this), true), new Step<>(() -> new InstallStep(this), true) });
+
 		setSize(WIDTH, HEIGHT);
 		setResizable(false);
 		setLayout(null);
@@ -71,21 +76,7 @@ public class InstallerFrame extends JFrame {
 		});
 		add(next);
 
-		setStep(StepType.CHOOSE_LAUNCHER);
-	}
-
-	private void setStep(StepType step) {
-		enableNextButton(true);
-		if (this.step != null) {
-			remove(this.step.getPanel(this));
-		}
-		this.step = step;
-		add(step.getPanel(this));
-		previous.setVisible(step.hasPrevious());
-		step.getPanel(this).setBounds(0, 50, getWidth(), HEIGHT - 130);
-		step.getPanel(this).updateUI();
-		this.repaint();
-		next.setVisible(step.nextButtonShown());
+		setStep(null, steps.current());
 	}
 
 	@Override
@@ -110,27 +101,43 @@ public class InstallerFrame extends JFrame {
 	}
 
 	public void enableNextButton(boolean enabled) {
+		previous.setEnabled(enabled);
 		next.setEnabled(enabled);
 	}
 
+	private void setStep(StepContent<JPanel> previousStep, StepContent<JPanel> step) {
+		if (previousStep != null) {
+			remove(previousStep.getContent());
+		}
+		add(step.getContent());
+		previous.setVisible(steps.hasLess());
+		step.getContent().setBounds(0, 50, getWidth(), HEIGHT - 130);
+		step.getContent().updateUI();
+		this.repaint();
+		next.setVisible(step.getStep().isNextShown());
+	}
+
 	public void previous() {
-		if (this.step.hasPrevious()) {
-			StepType current = this.step;
-			setStep(this.step.previous());
-			current.clearState();
+		enableNextButton(true);
+
+		if (steps.hasLess()) {
+			setStep(steps.current(), steps.goBackwards());
 			next.setText(Locale.get(Locale.UI_NEXT));
 		}
 	}
 
 	public void next() {
-		if (this.step.hasNext()) {
-			if (!this.step.next().hasNext()) {
+		enableNextButton(true);
+
+		if (steps.hasMore()) {
+			setStep(steps.current(), steps.goForwards());
+
+			if (!steps.hasMore()) {
 				next.setText(Locale.get(Locale.UI_FINISH));
 			}
-
-			setStep(this.step.next());
 			return;
 		}
+
 		System.exit(0);
 	}
 
