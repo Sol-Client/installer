@@ -102,7 +102,7 @@ public class InstallStep extends javax.swing.JPanel implements InstallStatusCall
 	@Override
 	public void setProgressBarValues(int max, int cur) {
 		EventQueue.invokeLater(() -> {
-			if(lastMax != max) {
+			if (lastMax != max) {
 				installProgressBar.setMaximum(max);
 				lastMax = max;
 			}
@@ -118,7 +118,7 @@ public class InstallStep extends javax.swing.JPanel implements InstallStatusCall
 	@Override
 	public void onDone(boolean okay) {
 		EventQueue.invokeLater(() -> {
-			if(okay) {
+			if (okay) {
 				setTextStatus(Locale.get(Locale.MSG_DONE));
 			}
 			installProgressBar.setIndeterminate(false);

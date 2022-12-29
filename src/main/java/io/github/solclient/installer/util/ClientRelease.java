@@ -27,8 +27,7 @@ package io.github.solclient.installer.util;
 import java.io.IOException;
 import java.net.URL;
 
-import io.toadlabs.jfgjds.data.JsonObject;
-import io.toadlabs.jfgjds.data.JsonValue;
+import io.toadlabs.jfgjds.data.*;
 
 public final class ClientRelease {
 
@@ -39,15 +38,15 @@ public final class ClientRelease {
 		rel.id = obj.get("name").getStringValue();
 		JsonObject gameAsset = null;
 
-		for(JsonValue assetObj : obj.get("assets").asArray()) {
+		for (JsonValue assetObj : obj.get("assets").asArray()) {
 			JsonObject asset = assetObj.asObject();
-			if(asset.get("name").getStringValue().equals("game.jar")) {
+			if (asset.get("name").getStringValue().equals("game.jar")) {
 				gameAsset = asset;
 				break;
 			}
 		}
 
-		if(gameAsset == null) {
+		if (gameAsset == null) {
 			throw new IllegalArgumentException("No game.jar found for version " + rel.id);
 		}
 

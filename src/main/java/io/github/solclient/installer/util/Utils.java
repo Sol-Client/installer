@@ -24,15 +24,8 @@
 
 package io.github.solclient.installer.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.io.*;
+import java.net.*;
 
 import io.github.solclient.installer.InstallStatusCallback;
 import io.toadlabs.jfgjds.JsonDeserializer;
@@ -43,7 +36,7 @@ public class Utils {
 	public static final String USER_AGENT = "Mozilla/5.0";
 
 	public static JsonObject json(URL url) throws IOException {
-		try(InputStream in = url.openStream(); Reader reader = new InputStreamReader(in)) {
+		try (InputStream in = url.openStream(); Reader reader = new InputStreamReader(in)) {
 			return JsonDeserializer.read(reader).asObject();
 		}
 	}
@@ -51,8 +44,7 @@ public class Utils {
 	public static URL sneakyParse(String spec) {
 		try {
 			return new URL(spec);
-		}
-		catch(MalformedURLException error) {
+		} catch (MalformedURLException error) {
 			throw new IllegalArgumentException(spec);
 		}
 	}
@@ -66,24 +58,24 @@ public class Utils {
 		conn.connect();
 		InputStream stream = conn.getInputStream();
 
-		try(FileOutputStream output = new FileOutputStream(destination)) {
+		try (FileOutputStream output = new FileOutputStream(destination)) {
 			long fileLength = conn.getContentLength();
 			float filePercentDivider = 10000f / fileLength;
 
-			if(fileLength == -1) {
+			if (fileLength == -1) {
 				callback.setProgressBarIndeterminate(true);
 			}
 
 			int cnt;
 			int ov_cnt = 0;
 			byte[] buf = new byte[1024];
-			while((cnt = stream.read(buf)) != -1) {
+			while ((cnt = stream.read(buf)) != -1) {
 				output.write(buf, 0, cnt);
 				ov_cnt += cnt;
 				callback.setProgressBarValues(10000, (int) (ov_cnt * filePercentDivider));
 			}
 
-			if(fileLength == -1) {
+			if (fileLength == -1) {
 				callback.setProgressBarIndeterminate(false);
 			}
 		}
@@ -99,7 +91,7 @@ public class Utils {
 		int cnt;
 		byte[] buf = new byte[1024];
 
-		while((cnt = stream.read(buf)) != -1) {
+		while ((cnt = stream.read(buf)) != -1) {
 			output.append(new String(buf, 0, cnt));
 		}
 

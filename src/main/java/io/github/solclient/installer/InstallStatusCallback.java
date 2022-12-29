@@ -32,14 +32,14 @@ public interface InstallStatusCallback {
 		setTextStatus(status + ":");
 		setTextStatus(error.toString());
 		setTextStatus(error.getStackTrace());
-		while((error = error.getCause()) != null) {
+		while ((error = error.getCause()) != null) {
 			setTextStatus("Caused by " + error);
 			setTextStatus(error.getStackTrace());
 		}
 	}
 
 	default void setTextStatus(StackTraceElement[] elements) {
-		for(StackTraceElement element : elements) {
+		for (StackTraceElement element : elements) {
 			setTextStatus("        at " + element.toString());
 		}
 	}

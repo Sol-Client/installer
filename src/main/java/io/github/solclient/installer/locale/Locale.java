@@ -24,67 +24,36 @@
 
 package io.github.solclient.installer.locale;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 
 public final class Locale {
 
-	public static final int MSG_GETTING_VERSION_INFO = 0,
-			MSG_GETTING_VERSION_INFO_FAILED = 1,
-			MSG_INSTALLING_VERSION = 2,
-			MSG_DOWNLOADING_GENERIC = 3,
-			MSG_DOWNLOADING_CLIENT = 4,
-			MSG_DOWNLOADING_MAPPINGS = 5,
-			MSG_NO_MAPPINGS = 6,
-			MSG_REMAPPING = 7,
-			MSG_SAVING = 8,
-			MSG_DOWNLOAD_ERROR = 9,
-			MSG_INITIALIZATION_FAILED = 10,
-			MSG_CACHE_FAILED = 11,
-			MSG_REMAP_FAILED = 12,
-			MSG_UNPACKING_MAPPINGS = 13,
-			MSG_CANT_CREATE_FOLDER = 14,
-			MSG_DAMAGED_MC_JSON = 15,
-			MSG_JAR_VERIFIED = 16,
-			UI_TITLE = 17,
-			UI_BACK = 18,
-			UI_NEXT = 19,
-			UI_SELECT_LAUNCHER = 20,
-			UI_INSTALL_LOCATION = 21,
-			UI_OH_DEAR = 22,
-			UI_NO_GAMEDIR = 23,
-			MSG_DONE = 24,
-			MSG_EXTRACTING_OPTIFINE = 25,
-			MSG_INSTALLING_OPTIFINE = 26,
-			UI_FINISH = 27,
-			UI_ENABLE_OPTIFINE = 28,
-			UI_CUSTOMISE = 29,
-			MSG_CREATING_PROFILE = 30,
-			MSG_NO_LAUNCHER_PROFILES = 31,
-			UI_SELECT = 32,
-			UI_SELECT_GAMEDIR = 33,
-			UI_ACCESSIBLE_DIRECTORIES = 34,
-			MSG_INVALID_MANIFEST = 35,
-			MSG_NO_MINECRAFT = 36,
-			MSG_SEARCHING_MINECRAFT = 37,
-			UI_ERROR = 38,
-			UI_NO_SHA1 = 39;
+	public static final int MSG_GETTING_VERSION_INFO = 0, MSG_GETTING_VERSION_INFO_FAILED = 1,
+			MSG_INSTALLING_VERSION = 2, MSG_DOWNLOADING_GENERIC = 3, MSG_DOWNLOADING_CLIENT = 4,
+			MSG_DOWNLOADING_MAPPINGS = 5, MSG_NO_MAPPINGS = 6, MSG_REMAPPING = 7, MSG_SAVING = 8,
+			MSG_DOWNLOAD_ERROR = 9, MSG_INITIALIZATION_FAILED = 10, MSG_CACHE_FAILED = 11, MSG_REMAP_FAILED = 12,
+			MSG_UNPACKING_MAPPINGS = 13, MSG_CANT_CREATE_FOLDER = 14, MSG_DAMAGED_MC_JSON = 15, MSG_JAR_VERIFIED = 16,
+			UI_TITLE = 17, UI_BACK = 18, UI_NEXT = 19, UI_SELECT_LAUNCHER = 20, UI_INSTALL_LOCATION = 21,
+			UI_OH_DEAR = 22, UI_NO_GAMEDIR = 23, MSG_DONE = 24, MSG_EXTRACTING_OPTIFINE = 25,
+			MSG_INSTALLING_OPTIFINE = 26, UI_FINISH = 27, UI_ENABLE_OPTIFINE = 28, UI_CUSTOMISE = 29,
+			MSG_CREATING_PROFILE = 30, MSG_NO_LAUNCHER_PROFILES = 31, UI_SELECT = 32, UI_SELECT_GAMEDIR = 33,
+			UI_ACCESSIBLE_DIRECTORIES = 34, MSG_INVALID_MANIFEST = 35, MSG_NO_MINECRAFT = 36,
+			MSG_SEARCHING_MINECRAFT = 37, UI_ERROR = 38, UI_NO_SHA1 = 39;
 
 	private static final String[] LOCALE_ARRAY = new String[UI_NO_SHA1 + 1];
 
 	public static void setLocale(java.util.Locale locale) {
 		loadDefault();
-		String searchPath1 = "/lang/"+locale.getLanguage()+"_"+locale.getCountry()+".txt";
-		String searchPath2 = "/lang/"+locale.getLanguage()+".txt";
+		String searchPath1 = "/lang/" + locale.getLanguage() + "_" + locale.getCountry() + ".txt";
+		String searchPath2 = "/lang/" + locale.getLanguage() + ".txt";
 		URL localeUrl = null;
 
-		if((localeUrl = Locale.class.getResource(searchPath1)) == null) {
+		if ((localeUrl = Locale.class.getResource(searchPath1)) == null) {
 			localeUrl = Locale.class.getResource(searchPath2);
 		}
 
-		if(localeUrl == null) {
+		if (localeUrl == null) {
 			System.err.printf("No locale found for %s_%s\n", locale.getLanguage(), locale.getCountry());
 			return;
 		}
@@ -97,11 +66,10 @@ public final class Locale {
 		try {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is.openStream()));
 			String line;
-			for(int ctr = 0; (line = reader.readLine()) != null; ctr++) {
+			for (int ctr = 0; (line = reader.readLine()) != null; ctr++) {
 				LOCALE_ARRAY[ctr] = line.replace("\\n", "\n");
 			}
-		}
-		catch(IOException error) {
+		} catch (IOException error) {
 			System.err.println("Could not read locale due to an I/O exception:");
 			error.printStackTrace();
 			return;

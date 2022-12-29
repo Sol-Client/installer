@@ -26,14 +26,10 @@ package io.github.solclient.installer.ui;
 
 import java.awt.Font;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
+
 import io.github.solclient.installer.Installer;
 import io.github.solclient.installer.locale.Locale;
-
 import io.github.solclient.installer.ui.step.StepType;
 
 public class InstallerFrame extends JFrame {
@@ -69,7 +65,8 @@ public class InstallerFrame extends JFrame {
 		next.setBounds(WIDTH - 120, HEIGHT - 80, 100, 30);
 		next.addActionListener((event) -> {
 			nextAction.run();
-			nextAction = () -> {};
+			nextAction = () -> {
+			};
 			next();
 		});
 		add(next);
@@ -79,7 +76,7 @@ public class InstallerFrame extends JFrame {
 
 	private void setStep(StepType step) {
 		enableNextButton(true);
-		if(this.step != null) {
+		if (this.step != null) {
 			remove(this.step.getPanel(this));
 		}
 		this.step = step;
@@ -117,7 +114,7 @@ public class InstallerFrame extends JFrame {
 	}
 
 	public void previous() {
-		if(this.step.hasPrevious()) {
+		if (this.step.hasPrevious()) {
 			StepType current = this.step;
 			setStep(this.step.previous());
 			current.clearState();
@@ -126,8 +123,8 @@ public class InstallerFrame extends JFrame {
 	}
 
 	public void next() {
-		if(this.step.hasNext()) {
-			if(!this.step.next().hasNext()) {
+		if (this.step.hasNext()) {
+			if (!this.step.next().hasNext()) {
 				next.setText(Locale.get(Locale.UI_FINISH));
 			}
 

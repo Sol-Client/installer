@@ -31,10 +31,8 @@ import javax.swing.JPanel;
 import io.github.solclient.installer.ui.InstallerFrame;
 
 public enum StepType {
-	CHOOSE_LAUNCHER(ChooseLauncherStep::new, false),
-	INSTALL_LOCATION(InstallLocationStep::new, true),
-	CUSTOMISE(CustomiseStep::new, true),
-	INSTALL(InstallStep::new, true);
+	CHOOSE_LAUNCHER(ChooseLauncherStep::new, false), INSTALL_LOCATION(InstallLocationStep::new, true),
+	CUSTOMISE(CustomiseStep::new, true), INSTALL(InstallStep::new, true);
 
 	private JPanel cachedPanel;
 	private Function<InstallerFrame, JPanel> panel;
@@ -50,7 +48,7 @@ public enum StepType {
 	}
 
 	public JPanel getPanel(InstallerFrame installer) {
-		if(cachedPanel != null) {
+		if (cachedPanel != null) {
 			return cachedPanel;
 		}
 

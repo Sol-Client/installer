@@ -24,11 +24,7 @@
 
 package io.github.solclient.installer.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
@@ -36,8 +32,7 @@ import org.apache.commons.io.FileUtils;
 
 import io.github.solclient.installer.InstallStatusCallback;
 import io.toadlabs.jfgjds.JsonSerializer;
-import io.toadlabs.jfgjds.data.JsonArray;
-import io.toadlabs.jfgjds.data.JsonObject;
+import io.toadlabs.jfgjds.data.*;
 
 public class MultiMCVersionCreator extends MCVersionCreator {
 	File instanceHome;
@@ -57,11 +52,10 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 			FileInputStream props = new FileInputStream(new File(gamedir, getConfigFile()));
 			multimcProps.load(props);
 			props.close();
-			if(multimcProps.containsKey("InstanceDir")) {
+			if (multimcProps.containsKey("InstanceDir")) {
 				instancesFldr = multimcProps.getProperty("InstanceDir");
 			}
-		}
-		catch(Exception error) {
+		} catch (Exception error) {
 			error.printStackTrace(); // please no
 		}
 
@@ -80,7 +74,7 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 
 	@Override
 	public boolean load(InstallStatusCallback cb) throws IOException {
-		if(!super.load(cb)) {
+		if (!super.load(cb)) {
 			return false;
 		}
 		gameJsonObject.remove("javaVersion");
@@ -105,7 +99,7 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 		instanceProperties.put("name", targetName);
 		instanceProperties.put("OverrideJavaArgs", "true");
 		instanceProperties.put("iconKey", "solclient");
-		if(getClass().equals(MultiMCVersionCreator.class)) {
+		if (getClass().equals(MultiMCVersionCreator.class)) {
 			instanceProperties.put("InstanceType", "OneSix");
 		}
 		FileOutputStream fInstanceProperties = new FileOutputStream(new File(instanceHome, "instance.cfg"));
@@ -129,7 +123,7 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 	@Override
 	public void addGameArguments(String... arguments) {
 		String args = gameJsonObject.get("minecraftArguments").getStringValue();
-		for(String arg : arguments) {
+		for (String arg : arguments) {
 			args += ' ' + arg;
 		}
 		gameJsonObject.put("minecraftArguments", args);
@@ -138,12 +132,11 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 	@Override
 	public void addProperty(String property, String value) {
 		String args;
-		if(instanceProperties.containsKey("JvmArgs")) {
+		if (instanceProperties.containsKey("JvmArgs")) {
 			args = instanceProperties.getProperty("JvmArgs");
 			args += " -D" + property + "=" + value;
 			instanceProperties.replace("JvmArgs", args);
-		}
-		else {
+		} else {
 			args = "-D" + property + "=" + value;
 			instanceProperties.put("JvmArgs", args);
 		}

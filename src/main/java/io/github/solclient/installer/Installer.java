@@ -24,29 +24,17 @@
 
 package io.github.solclient.installer;
 
-import static io.github.solclient.installer.Launcher.MOJANG;
-import static io.github.solclient.installer.Launcher.MULTIMC;
-import static io.github.solclient.installer.Launcher.PRISM;
+import static io.github.solclient.installer.Launcher.*;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLConnection;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.Base64;
-import java.util.Enumeration;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+import java.time.*;
+import java.util.*;
+import java.util.zip.*;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.*;
 
 import io.github.solclient.installer.locale.Locale;
 import io.github.solclient.installer.util.*;
@@ -81,15 +69,14 @@ public final class Installer {
 		ClientRelease latest;
 		try {
 			latest = ClientRelease.latest();
-		}
-		catch(Throwable error) {
+		} catch (Throwable error) {
 			callback.setTextStatus(Locale.get(Locale.MSG_GETTING_VERSION_INFO_FAILED), error);
 			callback.onDone(false);
 			return;
 		}
 		File cacheFolder = new File(System.getProperty("java.io.tmpdir"), "sol-installer-cache");
-		if(!cacheFolder.exists()) {
-			if(!cacheFolder.mkdirs()) {
+		if (!cacheFolder.exists()) {
+			if (!cacheFolder.mkdirs()) {
 				callback.setTextStatus(Locale.get(Locale.MSG_CACHE_FAILED));
 				callback.onDone(false);
 				return;
@@ -98,7 +85,7 @@ public final class Installer {
 		VersionCreator creator;
 		try {
 			String name = "Sol Client " + latest.getId();
-			switch(launcherType) {
+			switch (launcherType) {
 				default:
 				case Launcher.MOJANG:
 					creator = new MCVersionCreator(data, cacheFolder, name);
@@ -111,15 +98,14 @@ public final class Installer {
 					break;
 			}
 
-			if(!creator.load(callback)) {
+			if (!creator.load(callback)) {
 				callback.onDone(false);
 				return;
 			}
 			creator.removeLibrary("org.apache.logging.log4j:log4j-api:2.0-beta9");
 			creator.removeLibrary("org.apache.logging.log4j:log4j-core:2.0-beta9");
 			creator.removeLibrary("com.google.code.gson:gson:2.2.4");
-		}
-		catch(Exception error) {
+		} catch (Exception error) {
 			callback.setTextStatus(Locale.get(Locale.MSG_INITIALIZATION_FAILED), error);
 			callback.onDone(false);
 			return;
@@ -143,7 +129,7 @@ public final class Installer {
 			Utils.downloadFileMonitored(clientJar, new URL(gameJarUrl), callback);
 			creator.putLibrary(clientJar, "io.github.solclient:client:" + latest.getId());
 
-			if(enableOptifine) {
+			if (enableOptifine) {
 				callback.setTextStatus(Locale.get(Locale.MSG_DOWNLOADING_GENERIC, "OptiFine"));
 				Utils.downloadFileMonitored(optifineJar, getOptifineUrl(), callback);
 			}
@@ -153,43 +139,42 @@ public final class Installer {
 
 			boolean libs = true;
 
-			libs=libs&& creator.putFullLibrary(
+			libs = libs && creator.putFullLibrary(
 					"https://repo.maven.apache.org/maven2/org/slick2d/slick2d-core/1.0.2/slick2d-core-1.0.2.jar",
 					"org.slick2d:slick2d-core:1.0.2", callback);
-			libs=libs&& creator.putFullLibrary(
+			libs = libs && creator.putFullLibrary(
 					"https://repo.hypixel.net/repository/Hypixel/net/hypixel/hypixel-api-core/4.0/hypixel-api-core-4.0.jar",
 					"net.hypixel:hypixel-api-core:4.0", callback);
-			libs=libs&& creator.putFullLibrary(
+			libs = libs && creator.putFullLibrary(
 					"https://repo.spongepowered.org/repository/maven-public/org/spongepowered/mixin/0.7.11-SNAPSHOT/mixin-0.7.11-20180703.121122-1.jar",
 					"org.spongepowered:mixin:0.7.11-SNAPSHOT", callback);
-			libs=libs&& creator.putFullLibrary(
+			libs = libs && creator.putFullLibrary(
 					"https://libraries.minecraft.net/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar",
 					"net.minecraft:launchwrapper:1.12", callback);
-			libs=libs&& creator.putFullLibrary(
+			libs = libs && creator.putFullLibrary(
 					"https://repo.maven.apache.org/maven2/org/ow2/asm/asm-debug-all/5.2/asm-debug-all-5.2.jar",
 					"org.ow2.asm:asm-debug-all:5.2", callback);
-			libs=libs&& creator.putFullLibrary(
+			libs = libs && creator.putFullLibrary(
 					"https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-core/2.17.1/log4j-core-2.17.1.jar",
 					"org.apache.logging.log4j:log4j-core:2.17.1", callback);
-			libs=libs&& creator.putFullLibrary(
+			libs = libs && creator.putFullLibrary(
 					"https://repo.maven.apache.org/maven2/org/apache/logging/log4j/log4j-api/2.17.1/log4j-api-2.17.1.jar",
 					"org.apache.logging.log4j:log4j-api:2.17.1", callback);
-			libs=libs&& creator.putFullLibrary(
+			libs = libs && creator.putFullLibrary(
 					"https://libraries.minecraft.net/com/google/code/gson/gson/2.8.8/gson-2.8.8.jar",
 					"com.google.code.gson:gson:2.8.8", callback);
 
-			if(!libs) {
+			if (!libs) {
 				callback.onDone(false);
 				return;
 			}
-		}
-		catch(Throwable error) {
+		} catch (Throwable error) {
 			callback.setTextStatus(Locale.get(Locale.MSG_DOWNLOAD_ERROR), error);
 			callback.onDone(false);
 			return;
 		}
 		try {
-			if(enableOptifine) {
+			if (enableOptifine) {
 				callback.setProgressBarIndeterminate(false);
 				callback.setTextStatus(Locale.get(Locale.MSG_EXTRACTING_OPTIFINE));
 				URLClassLoader classLoader = new URLClassLoader(new URL[] { optifineJar.toURI().toURL() }, null);
@@ -197,20 +182,19 @@ public final class Installer {
 				Method processMethod = patcher.getMethod("process", File.class, File.class, File.class);
 				processMethod.invoke(processMethod, creator.getSourceClient(), optifineJar, optifineJarMod);
 				callback.setTextStatus(Locale.get(Locale.MSG_INSTALLING_OPTIFINE));
-				try(ZipFile optifinePatches = new ZipFile(optifineJarMod);
+				try (ZipFile optifinePatches = new ZipFile(optifineJarMod);
 						ZipFile srcZip = new ZipFile(creator.getSourceClient());
 						ZipOutputStream patchedOut = new ZipOutputStream(new FileOutputStream(patchedJar))) {
 					Enumeration<? extends ZipEntry> srcEntries = srcZip.entries();
 					int ctr = 0;
 					int max = srcZip.size();
-					while(srcEntries.hasMoreElements()) {
+					while (srcEntries.hasMoreElements()) {
 						ZipEntry entry = srcEntries.nextElement();
 						InputStream in;
 						ZipEntry patchEntry = optifinePatches.getEntry(entry.getName());
-						if(patchEntry != null) {
+						if (patchEntry != null) {
 							in = optifinePatches.getInputStream(patchEntry);
-						}
-						else {
+						} else {
 							in = srcZip.getInputStream(entry);
 						}
 						patchedOut.putNextEntry(new ZipEntry(entry.getName()));
@@ -222,9 +206,9 @@ public final class Installer {
 					ctr = 0;
 					max = optifinePatches.size();
 					Enumeration<? extends ZipEntry> patchEntries = optifinePatches.entries();
-					while(patchEntries.hasMoreElements()) {
+					while (patchEntries.hasMoreElements()) {
 						ZipEntry entry = patchEntries.nextElement();
-						if(srcZip.getEntry(entry.getName()) == null) {
+						if (srcZip.getEntry(entry.getName()) == null) {
 							patchedOut.putNextEntry(new ZipEntry(entry.getName()));
 							InputStream in = optifinePatches.getInputStream(entry);
 							IOUtils.copy(in, patchedOut);
@@ -239,7 +223,7 @@ public final class Installer {
 			callback.setTextStatus(Locale.get(Locale.MSG_UNPACKING_MAPPINGS));
 			ZipFile mappingsFile = new ZipFile(mappings);
 			ZipEntry joinedSrgEntry = mappingsFile.getEntry("joined.srg");
-			if(joinedSrgEntry == null) {
+			if (joinedSrgEntry == null) {
 				callback.setTextStatus(Locale.get(Locale.MSG_NO_MAPPINGS));
 				callback.onDone(false);
 				mappingsFile.close();
@@ -262,8 +246,7 @@ public final class Installer {
 			creator.save("net.minecraft.launchwrapper.Launch");
 			callback.setTextStatus(Locale.get(Locale.MSG_CREATING_PROFILE));
 			callback.onDone(addProfile(creator.getTargetName()));
-		}
-		catch(Throwable e) {
+		} catch (Throwable e) {
 			callback.setTextStatus(Locale.get(Locale.MSG_REMAP_FAILED), e);
 			callback.onDone(false);
 		}
@@ -281,18 +264,18 @@ public final class Installer {
 	}
 
 	private boolean addProfile(String versionId) throws IOException {
-		switch(launcherType) {
+		switch (launcherType) {
 			default:
 			case MOJANG:
 				File launcherProfiles = new File(data, "launcher_profiles.json");
 				File launcherProfilesMS = new File(data, "launcher_profiles_microsoft_store.json");
 				File launcherUiState = new File(data, "launcher_ui_state.json");
 
-				if(launcherProfilesMS.lastModified() > launcherProfiles.lastModified()) {
+				if (launcherProfilesMS.lastModified() > launcherProfiles.lastModified()) {
 					launcherProfiles = launcherProfilesMS;
 				}
 
-				if(!launcherProfiles.exists()) {
+				if (!launcherProfiles.exists()) {
 					callback.setTextStatus(Locale.get(Locale.MSG_NO_LAUNCHER_PROFILES));
 					return false;
 				}
@@ -316,7 +299,7 @@ public final class Installer {
 
 				FileUtils.writeStringToFile(launcherProfiles, profilesData.toString(), StandardCharsets.UTF_8);
 
-				if(launcherUiState.exists()) {
+				if (launcherUiState.exists()) {
 					dismissInstallation(launcherUiState, versionId);
 				}
 
@@ -330,10 +313,10 @@ public final class Installer {
 	private static void dismissInstallation(File launcherUiState, String versionId) throws IOException {
 		String data = FileUtils.readFileToString(launcherUiState, StandardCharsets.UTF_8);
 
-		if(data.contains("$#")) {
+		if (data.contains("$#")) {
 			data = data.substring(data.indexOf("$#") + 2);
 
-			while(data.startsWith("\n") || data.startsWith("\r")) {
+			while (data.startsWith("\n") || data.startsWith("\r")) {
 				data = data.substring(1);
 			}
 		}
@@ -342,13 +325,13 @@ public final class Installer {
 
 		String uiEvents = "{}";
 
-		if(obj.get("data").asObject().contains("UiEvents")) {
+		if (obj.get("data").asObject().contains("UiEvents")) {
 			uiEvents = obj.get("data").asObject().get("UiEvents").getStringValue();
 		}
 
 		JsonObject uiEventsObj = JsonDeserializer.fromString(uiEvents).asObject();
 
-		if(!uiEventsObj.contains("hidePlayerSafetyDisclaimer")) {
+		if (!uiEventsObj.contains("hidePlayerSafetyDisclaimer")) {
 			uiEventsObj.put("hidePlayerSafetyDisclaimer", new JsonObject());
 		}
 

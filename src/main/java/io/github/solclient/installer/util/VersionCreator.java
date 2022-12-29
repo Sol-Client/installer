@@ -24,10 +24,9 @@
 
 package io.github.solclient.installer.util;
 
-import io.github.solclient.installer.InstallStatusCallback;
+import java.io.*;
 
-import java.io.File;
-import java.io.IOException;
+import io.github.solclient.installer.InstallStatusCallback;
 
 public interface VersionCreator {
 

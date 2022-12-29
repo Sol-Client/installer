@@ -24,9 +24,7 @@
 
 package io.github.solclient.installer.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
@@ -35,9 +33,7 @@ import org.apache.commons.io.FileUtils;
 import io.github.solclient.installer.InstallStatusCallback;
 import io.github.solclient.installer.locale.Locale;
 import io.toadlabs.jfgjds.JsonDeserializer;
-import io.toadlabs.jfgjds.data.JsonArray;
-import io.toadlabs.jfgjds.data.JsonObject;
-import io.toadlabs.jfgjds.data.JsonValue;
+import io.toadlabs.jfgjds.data.*;
 
 public class MCVersionCreator implements VersionCreator {
 
@@ -47,7 +43,8 @@ public class MCVersionCreator implements VersionCreator {
 	String targetName;
 	File libsFolder;
 
-	MCVersionCreator() {}
+	MCVersionCreator() {
+	}
 
 	public MCVersionCreator(File gamedir, File tempDir, String targetName) {
 		this.targetName = targetName;
@@ -63,28 +60,25 @@ public class MCVersionCreator implements VersionCreator {
 
 	@Override
 	public boolean load(InstallStatusCallback cb) throws IOException {
-		if(gameJson != null && gameJson.canRead()) {
+		if (gameJson != null && gameJson.canRead()) {
 			gameJsonObject = JsonDeserializer.read(new FileInputStream(gameJson), StandardCharsets.UTF_8).asObject();
-		}
-		else {
+		} else {
 			cb.setTextStatus(Locale.get(Locale.MSG_SEARCHING_MINECRAFT, "1.8.9"));
 			gameJsonObject = getMinecraftJson("1.8.9", cb);
 		}
-		if(gameJar == null) {
+		if (gameJar == null) {
 			gameJar = new File(tempDir, "1.8.9.jar");
 		}
 		JsonObject downloads = gameJsonObject.get("downloads").asObject();
-		if(downloads != null && downloads.contains("client")) {
+		if (downloads != null && downloads.contains("client")) {
 			JsonObject client = downloads.get("client").asObject();
-			if(!VersionCreatorUtils.verify(gameJar, client.get("sha1").getStringValue())) {
+			if (!VersionCreatorUtils.verify(gameJar, client.get("sha1").getStringValue())) {
 				cb.setTextStatus(Locale.get(Locale.MSG_DOWNLOADING_GENERIC, gameJar.getName()));
 				Utils.downloadFileMonitored(gameJar, new URL(client.get("url").getStringValue()), cb);
-			}
-			else {
+			} else {
 				cb.setTextStatus(Locale.get(Locale.MSG_JAR_VERIFIED, gameJar.getName()));
 			}
-		}
-		else {
+		} else {
 			cb.setTextStatus(Locale.get(Locale.MSG_DAMAGED_MC_JSON));
 			return false;
 		}
@@ -96,18 +90,17 @@ public class MCVersionCreator implements VersionCreator {
 	private JsonObject getMinecraftJson(String mcVersion, InstallStatusCallback cb) throws IOException {
 		JsonObject versionManifest = Utils
 				.json(new URL("https://launchermeta.mojang.com/mc/game/version_manifest_v2.json"));
-		if(versionManifest.contains("versions")) {
-			for(JsonValue versionValue : versionManifest.get("versions").asArray()) {
+		if (versionManifest.contains("versions")) {
+			for (JsonValue versionValue : versionManifest.get("versions").asArray()) {
 				JsonObject version = versionValue.asObject();
-				if(mcVersion.equals(version.getOpt("id").map(JsonValue::getStringValue).orElse(null))
+				if (mcVersion.equals(version.getOpt("id").map(JsonValue::getStringValue).orElse(null))
 						&& version.contains("url")) {
 					return Utils.json(new URL(version.get("url").getStringValue()));
 				}
 			}
 			cb.setTextStatus(Locale.get(Locale.MSG_NO_MINECRAFT, mcVersion));
 			return null;
-		}
-		else {
+		} else {
 			cb.setTextStatus(Locale.get(Locale.MSG_INVALID_MANIFEST));
 			return null;
 		}
@@ -120,7 +113,7 @@ public class MCVersionCreator implements VersionCreator {
 
 		JsonArray game = arguments.computeIfAbsent("game", JsonArray.DEFAULT_COMPUTION).asArray();
 
-		for(String arg : args) {
+		for (String arg : args) {
 			game.add(arg);
 		}
 
@@ -149,7 +142,7 @@ public class MCVersionCreator implements VersionCreator {
 
 	@Override
 	public void addGameArguments(String... arguments) {
-		for(String argument : arguments) {
+		for (String argument : arguments) {
 			gameJsonObject.get("arguments").asObject().get("game").asArray().add(argument);
 		}
 	}
@@ -172,8 +165,8 @@ public class MCVersionCreator implements VersionCreator {
 	@Override
 	public void removeLibrary(String mavenName) {
 		JsonArray libraries = gameJsonObject.get("libraries").asArray();
-		for(int i = 0; i < libraries.size(); i++) {
-			if(libraries.get(i).asObject().get("name").getStringValue().equals(mavenName)) {
+		for (int i = 0; i < libraries.size(); i++) {
+			if (libraries.get(i).asObject().get("name").getStringValue().equals(mavenName)) {
 				libraries.remove(i);
 				return;
 			}
@@ -185,7 +178,7 @@ public class MCVersionCreator implements VersionCreator {
 		String libLocalPath = VersionCreatorUtils.mavenNameToPath(mavenName);
 		File libPath = new File(libsFolder, libLocalPath);
 		cb.setTextStatus(Locale.get(Locale.MSG_DOWNLOADING_GENERIC, mavenName));
-		if(!libPath.getParentFile().exists() && !libPath.getParentFile().mkdirs()) {
+		if (!libPath.getParentFile().exists() && !libPath.getParentFile().mkdirs()) {
 			cb.setTextStatus(Locale.get(Locale.MSG_CANT_CREATE_FOLDER, libPath.getAbsolutePath()));
 			return false;
 		}

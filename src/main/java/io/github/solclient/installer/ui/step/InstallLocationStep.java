@@ -83,16 +83,16 @@ public class InstallLocationStep extends JPanel {
 			chooser.setMultiSelectionEnabled(false);
 			chooser.setDialogTitle(Locale.get(Locale.UI_SELECT_GAMEDIR));
 			chooser.setApproveButtonText(Locale.get(Locale.UI_SELECT));
-			if(chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+			if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
 				File selected = chooser.getSelectedFile();
 				installationLocation.setText(selected.getAbsolutePath());
 			}
 		});
 		frame.setNextButtonAction(() -> {
 			File file = getFile(installationLocation);
-			if(!file.canRead() || !file.canWrite()) { // <- thy return false when the file doesn't exist
-				JOptionPane.showMessageDialog(frame, Locale.get(Locale.UI_NO_GAMEDIR),
-						Locale.get(Locale.UI_OH_DEAR), JOptionPane.ERROR_MESSAGE);
+			if (!file.canRead() || !file.canWrite()) { // <- thy return false when the file doesn't exist
+				JOptionPane.showMessageDialog(frame, Locale.get(Locale.UI_NO_GAMEDIR), Locale.get(Locale.UI_OH_DEAR),
+						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			frame.getInstaller().setPath(file);

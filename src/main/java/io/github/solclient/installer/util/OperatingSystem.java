@@ -46,7 +46,7 @@ public enum OperatingSystem {
 	public boolean isDarkMode() {
 		try {
 			// based on https://github.com/JFormDesigner/FlatLaf/issues/204
-			switch(this) {
+			switch (this) {
 				case LINUX:
 					String output = getProcessOutput("dbus-send", "--session", "--print-reply=literal",
 							"--dest=org.freedesktop.portal.Desktop", "/org/freedesktop/portal/desktop",
@@ -62,17 +62,17 @@ public enum OperatingSystem {
 							"HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\\\Themes\\\\Personalize", "/v",
 							"AppsUseLightTheme").stream().anyMatch((line) -> line.contains("0x0"));
 			}
-		}
-		catch(Throwable error) {} // hacky but worth it
+		} catch (Throwable error) {
+		} // hacky but worth it
 		return false;
 	}
 
 	private static List<String> getProcessOutput(String... command) throws IOException {
 		Process process = new ProcessBuilder(command).start();
-		try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
 			List<String> result = new ArrayList<>();
 			String line;
-			while((line = reader.readLine()) != null) {
+			while ((line = reader.readLine()) != null) {
 				result.add(line);
 			}
 			return result;
@@ -80,12 +80,11 @@ public enum OperatingSystem {
 	}
 
 	public static OperatingSystem current() {
-		if(current == null) {
+		if (current == null) {
 			String os = System.getProperty("os.name").toLowerCase();
-			if(os.contains("win")) {
+			if (os.contains("win")) {
 				return current = WINDOWS;
-			}
-			else if(os.contains("mac")) {
+			} else if (os.contains("mac")) {
 				return current = OSX;
 			}
 			return current = LINUX;

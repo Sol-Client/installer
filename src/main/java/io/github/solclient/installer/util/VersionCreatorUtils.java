@@ -24,11 +24,10 @@
 
 package io.github.solclient.installer.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.io.*;
+import java.security.*;
 import java.util.Formatter;
+
 import org.apache.commons.io.FileUtils;
 
 public final class VersionCreatorUtils {
@@ -38,8 +37,7 @@ public final class VersionCreatorUtils {
 	static {
 		try {
 			shaDigest = MessageDigest.getInstance("SHA-1");
-		}
-		catch(NoSuchAlgorithmException error) {
+		} catch (NoSuchAlgorithmException error) {
 			error.printStackTrace();
 		}
 	}
@@ -59,9 +57,9 @@ public final class VersionCreatorUtils {
 	}
 
 	public static boolean verify(File input, String sha1) throws IOException {
-		if(!input.exists())
+		if (!input.exists())
 			return false;
-		if(sha1 == null)
+		if (sha1 == null)
 			return true;
 		String f_sha1 = byteToHex(shaDigest.digest(FileUtils.readFileToByteArray(input)));
 		return f_sha1.equals(sha1);
@@ -69,8 +67,8 @@ public final class VersionCreatorUtils {
 
 	private static String byteToHex(final byte[] hash) {
 		String result;
-		try(Formatter formatter = new Formatter()) {
-			for(byte b : hash) {
+		try (Formatter formatter = new Formatter()) {
+			for (byte b : hash) {
 				formatter.format("%02x", b);
 			}
 			result = formatter.toString();

@@ -25,9 +25,8 @@
 package io.github.solclient.installer;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+
 import io.github.solclient.installer.util.OperatingSystem;
 
 public final class Launcher {
@@ -37,7 +36,7 @@ public final class Launcher {
 
 	static {
 		List<File> multimcPaths, prismPaths;
-		switch(OperatingSystem.current()) {
+		switch (OperatingSystem.current()) {
 			default:
 				multimcPaths = Arrays.asList(new File(System.getProperty("user.home"), ".local/share/multimc"));
 				prismPaths = Arrays.asList(
@@ -64,7 +63,7 @@ public final class Launcher {
 	}
 
 	public static List<File> getLocationsForLauncher(int type) {
-		switch(type) {
+		switch (type) {
 			case MOJANG:
 				return MOJANG_PATHS;
 			case MULTIMC:
@@ -77,7 +76,7 @@ public final class Launcher {
 	}
 
 	public static File getVersionJar(File data, String version, int type) {
-		switch(type) {
+		switch (type) {
 			case MOJANG:
 				return new File(data, "versions/" + version + "/" + version + ".jar");
 			case MULTIMC:
@@ -97,11 +96,11 @@ public final class Launcher {
 	private static long deepLastModified(File file) {
 		long lastModified = file.lastModified();
 
-		if(!file.isDirectory()) {
+		if (!file.isDirectory()) {
 			return lastModified;
 		}
 
-		for(File subFile : file.listFiles()) {
+		for (File subFile : file.listFiles()) {
 			lastModified = Math.max(lastModified, deepLastModified(subFile));
 		}
 
