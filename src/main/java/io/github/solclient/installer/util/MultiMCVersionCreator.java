@@ -40,7 +40,7 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 	String version;
 	Properties instanceProperties = new Properties();
 
-	public MultiMCVersionCreator(File gamedir, File tmpDir, String targetName) {
+	public MultiMCVersionCreator(File gamedir, File tmpDir, String targetName, String targetId) {
 		this.multimcRoot = gamedir;
 		super.tempDir = tmpDir;
 		super.targetName = targetName;
@@ -55,11 +55,11 @@ public class MultiMCVersionCreator extends MCVersionCreator {
 			if (multimcProps.containsKey("InstanceDir")) {
 				instancesFldr = multimcProps.getProperty("InstanceDir");
 			}
-		} catch (Exception error) {
-			error.printStackTrace(); // please no
+		} catch (IOException error) {
+			throw new UncheckedIOException(error);
 		}
 
-		instanceHome = new File(gamedir, instancesFldr + "/" + targetName);
+		instanceHome = new File(gamedir, instancesFldr + "/" + targetId);
 		instanceHome.mkdirs();
 		targetJson = new File(instanceHome, "patches/net.minecraft.json");
 		targetJson.getParentFile().mkdirs();

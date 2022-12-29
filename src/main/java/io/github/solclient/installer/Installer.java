@@ -91,10 +91,10 @@ public final class Installer {
 					creator = new MCVersionCreator(data, cacheFolder, name);
 					break;
 				case Launcher.MULTIMC:
-					creator = new MultiMCVersionCreator(data, cacheFolder, name);
+					creator = new MultiMCVersionCreator(data, cacheFolder, name, "sol-client");
 					break;
 				case Launcher.PRISM:
-					creator = new PrismVersionCreator(data, cacheFolder, name);
+					creator = new PrismVersionCreator(data, cacheFolder, name, "sol-client");
 					break;
 			}
 

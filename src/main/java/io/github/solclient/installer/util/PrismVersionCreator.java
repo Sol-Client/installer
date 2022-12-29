@@ -29,8 +29,8 @@ import java.io.File;
 // Yep. Just one change.
 public class PrismVersionCreator extends MultiMCVersionCreator {
 
-	public PrismVersionCreator(File gamedir, File tmpDir, String targetName) {
-		super(gamedir, tmpDir, targetName);
+	public PrismVersionCreator(File gamedir, File tmpDir, String targetName, String targetId) {
+		super(gamedir, tmpDir, targetName, targetId);
 	}
 
 	@Override
