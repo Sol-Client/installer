@@ -61,6 +61,7 @@ public class ChooseLauncherStep extends JPanel {
 
 		JButton installPrism = new JButton("Prism");
 		installPrism.setBounds(320, 90, 100, 30);
+		installPrism.setToolTipText("Prism Launcher");
 		add(installPrism);
 		installPrism.addActionListener((event) -> {
 			frame.setInstallerType(Launcher.PRISM);

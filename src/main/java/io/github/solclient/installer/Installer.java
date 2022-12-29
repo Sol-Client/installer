@@ -240,6 +240,10 @@ public final class Installer {
 			callback.setTextStatus(Locale.get(Locale.MSG_SAVING));
 			creator.computeTargetClient();
 			creator.addProperty("io.github.solclient.client.version", latest.getId());
+			creator.addProperty("io.github.solclient.client.launcher", Launcher.getId(launcherType));
+			creator.addProperty("io.github.solclient.client.autoupdate", "false"); // perhaps auto-update will be
+																					// implemented in third party
+																					// launchers in the future
 			creator.addProperty("user.language", "en");
 			creator.addProperty("user.country", "US");
 			creator.setTweakerClass("io.github.solclient.client.tweak.Tweaker");

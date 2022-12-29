@@ -88,6 +88,19 @@ public final class Launcher {
 		}
 	}
 
+	public static String getId(int type) {
+		switch (type) {
+			case MOJANG:
+				return "mojang";
+			case MULTIMC:
+				return "multimc";
+			case PRISM:
+				return "prismlauncher";
+			default:
+				return "unknown";
+		}
+	}
+
 	public static File getDefaultLocation(List<File> locations) {
 		return locations.stream().filter(File::exists)
 				.sorted(Comparator.comparingLong((file) -> -deepLastModified(file))).findFirst().orElse(new File("."));
