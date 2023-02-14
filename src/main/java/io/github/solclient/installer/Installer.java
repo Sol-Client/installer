@@ -273,7 +273,6 @@ public final class Installer {
 			case MOJANG:
 				File launcherProfiles = new File(data, "launcher_profiles.json");
 				File launcherProfilesMS = new File(data, "launcher_profiles_microsoft_store.json");
-				File launcherUiState = new File(data, "launcher_ui_state.json");
 
 				if (launcherProfilesMS.lastModified() > launcherProfiles.lastModified()) {
 					launcherProfiles = launcherProfilesMS;
@@ -303,48 +302,11 @@ public final class Installer {
 
 				FileUtils.writeStringToFile(launcherProfiles, profilesData.toString(), StandardCharsets.UTF_8);
 
-				if (launcherUiState.exists()) {
-					dismissInstallation(launcherUiState, versionId);
-				}
-
 				return true;
 			case MULTIMC:
 			case PRISM:
 				return true; // everything is done in MultiMCVersionCreator/subclasses
 		}
-	}
-
-	private static void dismissInstallation(File launcherUiState, String versionId) throws IOException {
-		String data = FileUtils.readFileToString(launcherUiState, StandardCharsets.UTF_8);
-
-		if (data.contains("$#")) {
-			data = data.substring(data.indexOf("$#") + 2);
-
-			while (data.startsWith("\n") || data.startsWith("\r")) {
-				data = data.substring(1);
-			}
-		}
-
-		JsonObject obj = JsonDeserializer.fromString(data).asObject();
-
-		String uiEvents = "{}";
-
-		if (obj.get("data").asObject().contains("UiEvents")) {
-			uiEvents = obj.get("data").asObject().get("UiEvents").getStringValue();
-		}
-
-		JsonObject uiEventsObj = JsonDeserializer.fromString(uiEvents).asObject();
-
-		if (!uiEventsObj.contains("hidePlayerSafetyDisclaimer")) {
-			uiEventsObj.put("hidePlayerSafetyDisclaimer", new JsonObject());
-		}
-
-		JsonObject dismissedDisclaimers = uiEventsObj.get("hidePlayerSafetyDisclaimer").asObject();
-		dismissedDisclaimers.put(versionId + "_sol-client", true);
-
-		obj.get("data").asObject().put("UiEvents", uiEventsObj.toString());
-
-		FileUtils.writeStringToFile(launcherUiState, obj.toString(), StandardCharsets.UTF_8);
 	}
 
 }
